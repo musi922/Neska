@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   followButton: {
-    backgroundColor: '#6D28D9',
+    backgroundColor: '#00B4D8',
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.full,

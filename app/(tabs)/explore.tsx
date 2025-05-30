@@ -10,7 +10,7 @@ import ContentCard from '@/components/ContentCard';
 
 // Mock data
 const trendingTopics = [
-  { id: '1', name: 'Rwanda', count: '2.3K posts', icon: <TrendingUp size={20} color="#6D28D9" /> },
+  { id: '1', name: 'Rwanda', count: '2.3K posts', icon: <TrendingUp size={20} color="#00B4D8" /> },
   { id: '2', name: 'Music Festival', count: '1.8K posts', icon: <Music size={20} color="#F97316" /> },
   { id: '3', name: 'Gaming', count: '1.5K posts', icon: <Gamepad2 size={20} color="#0D9488" /> },
   { id: '4', name: 'Education', count: '1.2K posts', icon: <BookOpen size={20} color="#EF4444" /> },
