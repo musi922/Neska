@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
 import { Bell, MessageCircle, Heart, User, Coins } from 'lucide-react-native';
@@ -12,30 +18,34 @@ interface HeaderBarProps {
   title?: string;
   showActions?: boolean;
   transparent?: boolean;
+  userCoins?: number;
 }
 
-export default function HeaderBar({ 
-  title = 'Neska', 
+export default function HeaderBar({
+  title = 'Neska',
   showActions = true,
-  transparent = false
+  transparent = false,
+  userCoins = 10,
 }: HeaderBarProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
-  
+
   const headerHeight = 60 + insets.top;
 
   return (
-    <View style={[
-      styles.container, 
-      { 
-        height: headerHeight,
-        paddingTop: insets.top,
-        backgroundColor: transparent ? 'transparent' : colors.background,
-        borderBottomColor: transparent ? 'transparent' : colors.border,
-        borderBottomWidth: transparent ? 0 : StyleSheet.hairlineWidth,
-      }
-    ]}>
+    <View
+      style={[
+        styles.container,
+        {
+          height: headerHeight,
+          paddingTop: insets.top,
+          backgroundColor: transparent ? 'transparent' : colors.background,
+          borderBottomColor: transparent ? 'transparent' : colors.border,
+          borderBottomWidth: transparent ? 0 : StyleSheet.hairlineWidth,
+        },
+      ]}
+    >
       {transparent && Platform.OS === 'ios' && (
         <BlurView
           tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -43,28 +53,26 @@ export default function HeaderBar({
           style={StyleSheet.absoluteFill}
         />
       )}
-      
+
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-          <LinearGradient
-            colors={colors.gradient.primary}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.logoGradient}
-          >
-            <Text style={[styles.logo, { color: '#FFF' }]}>N</Text>
-          </LinearGradient>
-          <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+          <Text style={styles.title}>{title}</Text>
         </View>
-        
+
         {showActions && (
           <View style={styles.actions}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Bell size={24} color={colors.text} />
+
+            
+            {/* Coin Display Button */}
+            <TouchableOpacity style={styles.coinButton}>
+              <View style={styles.coinContainer}>
+                <View style={styles.coinIcon}>
+                  <Text style={styles.coinSymbol}>$</Text>
+                </View>
+                <Text style={styles.coinText}>{userCoins}RWF</Text>
+              </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Coins size={24} color={colors.text} />
-            </TouchableOpacity>
+            
             <TouchableOpacity style={styles.actionButton}>
               <Heart size={24} color={colors.text} />
             </TouchableOpacity>
@@ -116,7 +124,9 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: FontFamily.semiBold,
     fontSize: FontSize.lg,
+    fontWeight: '700',
     marginLeft: Spacing.sm,
+    color: '#00B4D8',
   },
   actions: {
     flexDirection: 'row',
@@ -125,13 +135,42 @@ const styles = StyleSheet.create({
   actionButton: {
     marginLeft: Spacing.md,
   },
+  coinButton: {
+    marginLeft: Spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  coinContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  coinText: {
+    marginLeft: 4,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#F59E0B',
+    fontFamily: FontFamily.semiBold,
+  },
   profileButton: {
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: '#6D28D9',
+    backgroundColor: '#00B4D8',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: Spacing.md,
+  },
+  coinIcon: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#F59E0B',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  coinSymbol: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 });

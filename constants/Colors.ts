@@ -1,5 +1,5 @@
-const tintColorLight = '#6D28D9';
-const tintColorDark = '#8B5CF6';
+const tintColorLight = '#00B4D8';
+const tintColorDark = '#00B4D8';
 
 export default {
   light: {
@@ -18,7 +18,7 @@ export default {
     shadow: 'rgba(0, 0, 0, 0.05)',
     translucent: 'rgba(255, 255, 255, 0.9)',
     gradient: {
-      primary: ['#6D28D9', '#8B5CF6'],
+      primary: ['#00B4D8', '#8B5CF6'],
       secondary: ['#0D9488', '#14B8A6'],
       accent: ['#F97316', '#FB923C'],
     }

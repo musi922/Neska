@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 35,
     borderWidth: 2,
-    borderColor: '#6D28D9',
+    borderColor: '#00B4D8',
   },
   liveIndicator: {
     position: 'absolute',
