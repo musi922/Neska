@@ -5,7 +5,6 @@ import { FontFamily, FontSize, Spacing, BorderRadius } from '@/constants/Theme';
 
 interface LivestreamPreviewProps {
   image: string;
-  title: string;
   username: string;
   avatar: string;
   viewers: number;
@@ -18,7 +17,6 @@ const cardWidth = width * 0.75;
 
 export default function LivestreamPreview({
   image,
-  title,
   username,
   avatar,
   viewers,
@@ -45,7 +43,6 @@ export default function LivestreamPreview({
         </View>
         
         <View style={styles.infoContainer}>
-          <Text style={styles.title} numberOfLines={2}>{title}</Text>
           <View style={styles.userContainer}>
             <Image source={{ uri: avatar }} style={styles.avatar} />
             <Text style={styles.username}>{username}</Text>
@@ -118,12 +115,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: Spacing.md,
-  },
-  title: {
-    color: '#FFF',
-    fontFamily: FontFamily.semiBold,
-    fontSize: FontSize.md,
-    marginBottom: Spacing.xs,
   },
   userContainer: {
     flexDirection: 'row',
