@@ -12,7 +12,7 @@ import ProfileSummary from '@/components/ProfileSummary';
 
 // Mock data
 const categories = [
-  'For You', 'Live', 'Music', 'Gaming', 'Sports', 'Comedy', 'Art', 'Education', 'Food'
+  'For You', 'Live', 'Following'
 ];
 
 const liveStreams = [
