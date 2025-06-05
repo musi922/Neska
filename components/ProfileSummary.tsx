@@ -7,7 +7,6 @@ import { FontFamily, FontSize, Spacing, BorderRadius } from '@/constants/Theme';
 interface ProfileSummaryProps {
   avatar: string;
   username: string;
-  followers: number;
   isLive?: boolean;
   onPress?: () => void;
 }
@@ -15,7 +14,6 @@ interface ProfileSummaryProps {
 export default function ProfileSummary({
   avatar,
   username,
-  followers,
   isLive = false,
   onPress
 }: ProfileSummaryProps) {
@@ -37,9 +35,6 @@ export default function ProfileSummary({
         numberOfLines={1}
       >
         {username}
-      </Text>
-      <Text style={[styles.followers, { color: colors.tabIconDefault }]}>
-        {followers} followers
       </Text>
     </TouchableOpacity>
   );
@@ -74,14 +69,9 @@ const styles = StyleSheet.create({
     borderColor: '#FFF',
   },
   username: {
-    fontFamily: FontFamily.semiBold,
-    fontSize: FontSize.sm,
-    textAlign: 'center',
-    marginBottom: 2,
-  },
-  followers: {
-    fontFamily: FontFamily.regular,
+    fontFamily: FontFamily.medium,
     fontSize: FontSize.xs,
     textAlign: 'center',
-  },
+    marginBottom: 2,
+  }
 });
