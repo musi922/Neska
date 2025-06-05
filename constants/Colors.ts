@@ -9,7 +9,7 @@ export default {
     tabIconDefault: '#9CA3AF',
     tabIconSelected: tintColorLight,
     accent: '#F97316',
-    secondary: '#0D9488',
+    secondary: '#FFF',
     tertiary: '#EF4444',
     subtle: '#F3F4F6',
     card: '#FFFFFF',
@@ -19,7 +19,7 @@ export default {
     translucent: 'rgba(255, 255, 255, 0.9)',
     gradient: {
       primary: ['#00B4D8', '#8B5CF6'],
-      secondary: ['#0D9488', '#14B8A6'],
+      secondary: ['#FFF', '#14B8A6'],
       accent: ['#F97316', '#FB923C'],
     }
   },

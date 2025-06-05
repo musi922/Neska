@@ -26,7 +26,7 @@ import {
   MessageSquare,
   Users,
   Clock,
-  Check
+  CheckCheck 
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
@@ -220,8 +220,7 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
             )}
             {chat.messageType === 'seen' && (
                 <View style={styles.seenIndicator}>
-                  <Check size={10} color={neskaColor} style={styles.checkIcon} />
-                  <Check size={10} color={neskaColor} />
+                  <CheckCheck  size={10} color={neskaColor} style={styles.checkIcon} />
                   <Text style={[styles.replyText, { color: neskaColor }]}>Seen</Text>
                 </View>
             )}
@@ -312,17 +311,17 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
               style={[
                 styles.tab,
                 activeTab === tab.id && styles.activeTab,
-                { borderBottomColor: activeTab === tab.id ? neskaColor : 'transparent' }
+                { borderBottomColor: activeTab === tab.id ? '#FFFFFF' : 'transparent' }
               ]}
               onPress={() => setActiveTab(tab.id)}
             >
               <View style={styles.tabContent}>
                 {tab.icon && <tab.icon size={16} color={
-                  activeTab === tab.id ? neskaColor : colors.secondary
+                  activeTab === tab.id ? '#FFFFFF' : '#00B4D8'
                 } />}
                 <Text style={[
                   styles.tabText,
-                  { color: activeTab === tab.id ? neskaColor : colors.secondary }
+                  { color: activeTab === tab.id ? '#FFFFFF' : '#00B4D8' }
                 ]}>
                   {tab.label}
                 </Text>
@@ -569,8 +568,8 @@ const styles = StyleSheet.create({
     marginRight: Spacing.xs,
   },
   replyText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '500',
     fontFamily: FontFamily.medium,
   },
   systemMessage: {
@@ -621,11 +620,11 @@ const styles = StyleSheet.create({
   seenIndicator: {
   flexDirection: 'row',
   alignItems: 'center',
-  gap: 2,
+  gap: 5,
   marginRight: Spacing.xs,
 },
 checkIcon: {
-  marginRight: -4,
+  marginRight: 1
 }
 });
 
