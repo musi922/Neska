@@ -195,19 +195,6 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
           <Text style={[styles.chatName, { color: colors.text }]} numberOfLines={1}>
             {chat.name}
           </Text>
-          <View style={styles.chatMeta}>
-            {chat.flames > 0 && (
-              <View style={styles.flameContainer}>
-                <Flame size={12} color={getFlameColor(chat.flames)} />
-                <Text style={[styles.flameCount, { color: getFlameColor(chat.flames) }]}>
-                  {chat.flames}
-                </Text>
-              </View>
-            )}
-            <Text style={[styles.timeText, { color: neskaColor }]}>
-              {chat.time}
-            </Text>
-          </View>
         </View>
 
         <View style={styles.messageContainer}>
@@ -238,9 +225,26 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.cameraButton}>
-        <Camera size={20} color={neskaColor} />
-      </TouchableOpacity>
+      {/* Right side container with flame/time and camera aligned */}
+      <View style={styles.rightContainer}>
+        <View style={styles.chatMeta}>
+          {chat.flames > 0 && (
+            <View style={styles.flameContainer}>
+              <Flame size={12} color={getFlameColor(chat.flames)} />
+              <Text style={[styles.flameCount, { color: getFlameColor(chat.flames) }]}>
+                {chat.flames}
+              </Text>
+            </View>
+          )}
+          <Text style={[styles.timeText, { color: neskaColor }]}>
+            {chat.time}
+          </Text>
+        </View>
+        
+        <TouchableOpacity style={styles.cameraButton}>
+          <Camera size={20} color={neskaColor} />
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 
@@ -526,14 +530,20 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.semiBold,
     flex: 1,
   },
+  // New container for right side alignment
+  rightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
   chatMeta: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: Spacing.xs,
   },
   flameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginRight: Spacing.xs,
   },
   flameCount: {
     fontSize: 12,
@@ -579,7 +589,6 @@ const styles = StyleSheet.create({
   },
   cameraButton: {
     padding: Spacing.sm,
-    marginLeft: Spacing.xs,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -618,14 +627,14 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.medium,
   },
   seenIndicator: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: 5,
-  marginRight: Spacing.xs,
-},
-checkIcon: {
-  marginRight: 1
-}
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    marginRight: Spacing.xs,
+  },
+  checkIcon: {
+    marginRight: 1
+  }
 });
 
 export default ChatOverlay;
