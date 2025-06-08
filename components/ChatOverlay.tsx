@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  Animated,
   Dimensions,
   Image,
   Platform,
@@ -116,28 +115,8 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
-  const slideAnim = useRef(new Animated.Value(width)).current;
-
   // Neska brand color
   const neskaColor = '#00B4D8';
-
-  React.useEffect(() => {
-    if (isVisible) {
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 100,
-        friction: 8,
-      }).start();
-    } else {
-      Animated.spring(slideAnim, {
-        toValue: width,
-        useNativeDriver: true,
-        tension: 100,
-        friction: 8,
-      }).start();
-    }
-  }, [isVisible]);
 
   const tabs = [
     { id: 'All', label: 'All', icon: MessageSquare, count: null },
@@ -252,14 +231,11 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
     </TouchableOpacity>
   );
 
-  if (!isVisible) return null;
-
-  return (
-    <Animated.View 
+  return isVisible ? (
+    <View 
       style={[
         styles.overlay,
         {
-          transform: [{ translateX: slideAnim }],
           backgroundColor: colors.background,
         }
       ]}
@@ -361,8 +337,8 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
           </View>
         )}
       </ScrollView>
-    </Animated.View>
-  );
+    </View>
+  ) : null;
 };
 
 const styles = StyleSheet.create({
