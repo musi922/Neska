@@ -315,7 +315,7 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
               style={[
                 styles.tab,
                 activeTab === tab.id && styles.activeTab,
-                { borderBottomColor: activeTab === tab.id ? '#FFFFFF' : 'transparent' }
+                { borderBottomColor: activeTab === tab.id ? '#FFFFF' : 'transparent' }
               ]}
               onPress={() => setActiveTab(tab.id)}
             >
