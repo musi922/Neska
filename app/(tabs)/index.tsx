@@ -12,7 +12,7 @@ import ProfileSummary from '@/components/ProfileSummary';
 
 // Mock data
 const categories = [
-  'For You', 'Live', 'Following'
+  'For You', 'Live', 'Following', 'Room'
 ];
 
 const liveStreams = [
