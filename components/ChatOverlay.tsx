@@ -356,36 +356,6 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
           </View>
         )}
       </ScrollView>
-
-      {/* Quick Actions */}
-      <View style={[styles.quickActions, { paddingBottom: insets.bottom + 10 }]}>
-        <TouchableOpacity style={styles.quickAction}>
-          <View style={[styles.quickActionIcon, { backgroundColor: `${neskaColor}15` }]}>
-            <Users size={20} color={neskaColor} />
-          </View>
-          <Text style={[styles.quickActionText, { color: colors.secondary }]}>
-            New Group
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.quickAction}>
-          <View style={[styles.quickActionIcon, { backgroundColor: `${neskaColor}15` }]}>
-            <Gift size={20} color="#FF6B35" />
-          </View>
-          <Text style={[styles.quickActionText, { color: colors.secondary }]}>
-            Send Gift
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.quickAction}>
-          <View style={[styles.quickActionIcon, { backgroundColor: `${neskaColor}15` }]}>
-            <Zap size={20} color="#FFD700" />
-          </View>
-          <Text style={[styles.quickActionText, { color: colors.secondary }]}>
-            Boost Chat
-          </Text>
-        </TouchableOpacity>
-      </View>
     </Animated.View>
   );
 };
