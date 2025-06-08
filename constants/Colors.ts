@@ -19,7 +19,7 @@ export default {
     translucent: 'rgba(255, 255, 255, 0.9)',
     gradient: {
       primary: ['#00B4D8', '#8B5CF6'],
-      secondary: ['#FFF', '#14B8A6'],
+      secondary: ['#FFF', '#00B4D8'],
       accent: ['#F97316', '#FB923C'],
     }
   },
@@ -30,7 +30,7 @@ export default {
     tabIconDefault: '#6B7280',
     tabIconSelected: tintColorDark,
     accent: '#FB923C',
-    secondary: '#14B8A6',
+    secondary: '#00B4D8',
     tertiary: '#EF4444',
     subtle: '#1F2937',
     card: '#1F2937',
@@ -40,7 +40,7 @@ export default {
     translucent: 'rgba(31, 41, 55, 0.9)',
     gradient: {
       primary: ['#8B5CF6', '#A78BFA'],
-      secondary: ['#14B8A6', '#2DD4BF'],
+      secondary: ['#00B4D8', '#2DD4BF'],
       accent: ['#FB923C', '#FD9C58'],
     }
   },

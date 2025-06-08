@@ -26,7 +26,8 @@ import {
   MessageSquare,
   Users,
   Clock,
-  CheckCheck 
+  CheckCheck,
+  Plus // Added for new message icon
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
@@ -112,7 +113,6 @@ interface ChatOverlayProps {
 const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
@@ -175,6 +175,10 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
     if (count >= 10) return '#FF8C42'; // High flame
     if (count >= 5) return '#FFB347';  // Medium flame
     return '#FFA500'; // Regular flame
+  };
+
+  const handleNewMessage = () => {
+    console.log('New message pressed');
   };
 
   const renderChatItem = (chat: any) => (
@@ -278,15 +282,17 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
           <Text style={[styles.headerTitle, { color: colors.text }]}>Chat</Text>
           
           <TouchableOpacity 
-            onPress={() => setShowSearch(!showSearch)} 
-            style={styles.searchButton}
+            onPress={handleNewMessage} 
+            style={styles.newMessageButton}
           >
-            <Search size={24} color={colors.text} />
+            <Plus size={24} color={colors.text} />
           </TouchableOpacity>
         </View>
 
-        {showSearch && (
-          <View style={styles.searchContainer}>
+        {/* Search Container - Always visible now */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInputContainer}>
+            <Search size={16} color={colors.secondary} style={styles.searchIcon} />
             <TextInput
               style={[styles.searchInput, { 
                 backgroundColor: colors.card, 
@@ -297,10 +303,9 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
               placeholderTextColor={colors.secondary}
               value={searchQuery}
               onChangeText={setSearchQuery}
-              autoFocus
             />
           </View>
-        )}
+        </View>
 
         {/* Tabs */}
         <ScrollView 
@@ -315,7 +320,7 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
               style={[
                 styles.tab,
                 activeTab === tab.id && styles.activeTab,
-                { borderBottomColor: activeTab === tab.id ? '#FFFFF' : 'transparent' }
+                { borderBottomColor: activeTab === tab.id ? '#FFFFFF' : 'transparent' }
               ]}
               onPress={() => setActiveTab(tab.id)}
             >
@@ -388,18 +393,30 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.semiBold,
     fontWeight: '700',
   },
-  searchButton: {
+  newMessageButton: {
     padding: Spacing.xs,
   },
   searchContainer: {
     paddingVertical: Spacing.sm,
   },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  searchIcon: {
+    position: 'absolute',
+    left: 12,
+    zIndex: 1,
+  },
   searchInput: {
     height: 40,
     borderRadius: 20,
-    paddingHorizontal: Spacing.md,
+    paddingLeft: 36, // Space for search icon
+    paddingRight: Spacing.md,
     fontSize: FontSize.md,
     borderWidth: 1,
+    flex: 1,
   },
   tabsContainer: {
     marginTop: Spacing.sm,
