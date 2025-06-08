@@ -12,14 +12,13 @@ import ProfileSummary from '@/components/ProfileSummary';
 
 // Mock data
 const categories = [
-  'For You', 'Live', 'Music', 'Gaming', 'Sports', 'Comedy', 'Art', 'Education', 'Food'
+  'For You', 'Live', 'Following', 'Room'
 ];
 
 const liveStreams = [
   {
     id: '1',
     image: 'https://images.pexels.com/photos/2263936/pexels-photo-2263936.jpeg',
-    title: 'Live music session from downtown Kigali!',
     username: 'musiclover243',
     avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
     viewers: 1542,
@@ -28,7 +27,6 @@ const liveStreams = [
   {
     id: '2',
     image: 'https://images.pexels.com/photos/9072388/pexels-photo-9072388.jpeg',
-    title: 'Gaming tournament finals - who will win?',
     username: 'gamerpro99',
     avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg',
     viewers: 872,
@@ -50,35 +48,30 @@ const creators = [
     id: '1',
     username: 'amani_j',
     avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
-    followers: 15400,
     isLive: true
   },
   {
     id: '2',
     username: 'tech_eric',
     avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
-    followers: 8320,
     isLive: false
   },
   {
     id: '3',
     username: 'dance_queen',
     avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
-    followers: 12700,
     isLive: true
   },
   {
     id: '4',
     username: 'artist_paul',
     avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg',
-    followers: 5640,
     isLive: false
   },
   {
     id: '5',
     username: 'comedian_k',
     avatar: 'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
-    followers: 9870,
     isLive: true
   }
 ];
@@ -156,9 +149,6 @@ export default function HomeScreen() {
         
         {/* Popular Creators */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Popular Creators
-          </Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -169,7 +159,6 @@ export default function HomeScreen() {
                 key={creator.id}
                 avatar={creator.avatar}
                 username={creator.username}
-                followers={creator.followers}
                 isLive={creator.isLive}
               />
             ))}
@@ -190,7 +179,6 @@ export default function HomeScreen() {
               <LivestreamPreview
                 key={stream.id}
                 image={stream.image}
-                title={stream.title}
                 username={stream.username}
                 avatar={stream.avatar}
                 viewers={stream.viewers}
