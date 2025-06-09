@@ -15,6 +15,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import ChatOverlay from './ChatOverlay';
 import NotificationOverlay from './NotificationOverlay';
+import ProfileOverlay from './ProfileOverlay';
 
 interface HeaderBarProps {
   title?: string;
@@ -31,6 +32,7 @@ export default function HeaderBar({
 }: HeaderBarProps) {
   const [showChat, setShowChat] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
@@ -51,6 +53,14 @@ export default function HeaderBar({
 
   const handleCloseNotifications = () => {
     setShowNotifications(false);
+  };
+
+  const handleProfilePress = () => {
+    setShowProfile(true);
+  };
+
+  const handleCloseProfile = () => {
+    setShowProfile(false);
   };
 
   return (
@@ -117,7 +127,7 @@ export default function HeaderBar({
                 </View>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.profileButton}>
+              <TouchableOpacity style={styles.profileButton} onPress={handleProfilePress}>
                 <User size={20} color="#FFF" />
               </TouchableOpacity>
             </View>
@@ -130,6 +140,9 @@ export default function HeaderBar({
       
       {/* Notification Overlay */}
       <NotificationOverlay isVisible={showNotifications} onClose={handleCloseNotifications} />
+
+      {/* Profile Overlay */}
+      <ProfileOverlay isVisible={showProfile} onClose={handleCloseProfile} />
     </>
   );
 }
