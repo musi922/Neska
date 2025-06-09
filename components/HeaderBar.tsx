@@ -13,7 +13,8 @@ import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-import ChatOverlay from './ChatOverlay'; // Import the chat overlay
+import ChatOverlay from './ChatOverlay';
+import NotificationOverlay from './NotificationOverlay';
 
 interface HeaderBarProps {
   title?: string;
@@ -29,6 +30,7 @@ export default function HeaderBar({
   userCoins = 10,
 }: HeaderBarProps) {
   const [showChat, setShowChat] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
@@ -41,6 +43,14 @@ export default function HeaderBar({
 
   const handleCloseChat = () => {
     setShowChat(false);
+  };
+
+  const handleNotificationPress = () => {
+    setShowNotifications(true);
+  };
+
+  const handleCloseNotifications = () => {
+    setShowNotifications(false);
   };
 
   return (
@@ -78,15 +88,23 @@ export default function HeaderBar({
                   <View style={styles.coinIcon}>
                     <Text style={styles.coinSymbol}>$</Text>
                   </View>
-                  <Text style={styles.coinText}>{userCoins}RWF</Text>
                 </View>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.actionButton}>
-                <Heart size={24} color={colors.text} />
+              {/* Updated Notification Button with badge */}
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={handleNotificationPress}
+              >
+                <View style={styles.notificationIconContainer}>
+                  <Heart size={24} color={colors.text} />
+                  <View style={styles.notificationBadge}>
+                    <Text style={styles.notificationText}>3</Text>
+                  </View>
+                </View>
               </TouchableOpacity>
               
-              {/* Updated Chat Button with notification badge */}
+              {/* Chat Button with notification badge */}
               <TouchableOpacity 
                 style={styles.actionButton} 
                 onPress={handleChatPress}
@@ -109,6 +127,9 @@ export default function HeaderBar({
 
       {/* Chat Overlay */}
       <ChatOverlay isVisible={showChat} onClose={handleCloseChat} />
+      
+      {/* Notification Overlay */}
+      <NotificationOverlay isVisible={showNotifications} onClose={handleCloseNotifications} />
     </>
   );
 }
@@ -163,18 +184,19 @@ const styles = StyleSheet.create({
   chatIconContainer: {
     position: 'relative',
   },
+  notificationIconContainer: {
+    position: 'relative',
+  },
   notificationBadge: {
     position: 'absolute',
     top: -6,
     right: -6,
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#00B4D8',
     borderRadius: 10,
     minWidth: 18,
     height: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FFF',
   },
   notificationText: {
     color: '#FFF',
@@ -195,7 +217,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     fontSize: 16,
     fontWeight: '600',
-    color: '#F59E0B',
+    color: '#00B4D8',
     fontFamily: FontFamily.semiBold,
   },
   profileButton: {
@@ -210,7 +232,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#00B4D8',
     justifyContent: 'center',
     alignItems: 'center',
   },

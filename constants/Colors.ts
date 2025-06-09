@@ -15,6 +15,7 @@ export default {
     card: '#FFFFFF',
     border: '#E5E7EB',
     notification: '#EF4444',
+    online: '#4ADE80',
     shadow: 'rgba(0, 0, 0, 0.05)',
     translucent: 'rgba(255, 255, 255, 0.9)',
     gradient: {
@@ -36,6 +37,7 @@ export default {
     card: '#1F2937',
     border: '#374151',
     notification: '#EF4444',
+    online: '#4ADE80', 
     shadow: 'rgba(0, 0, 0, 0.25)',
     translucent: 'rgba(31, 41, 55, 0.9)',
     gradient: {
