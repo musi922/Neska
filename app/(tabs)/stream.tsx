@@ -65,7 +65,7 @@ export default function StreamScreen() {
   
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <HeaderBar title="Stream" />
+      <HeaderBar />
       
       <ScrollView
         showsVerticalScrollIndicator={false}
