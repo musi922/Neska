@@ -69,13 +69,13 @@ export default function ExploreScreen() {
   
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <HeaderBar title="Explore" />
+      <HeaderBar />
       
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: 60 + insets.top }
+          { paddingTop: 80 + insets.top }
         ]}
       >
         {/* Search Bar */}

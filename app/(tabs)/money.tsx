@@ -29,6 +29,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
+import HeaderBar from '@/components/HeaderBar'; 
 
 // Mock data for coins packages
 const coinPackages = [
@@ -307,11 +308,13 @@ export default function MoneyScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <HeaderBar />
+        
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 100 }
+          { paddingTop: 60 + insets.top, paddingBottom: insets.bottom + 100 }
         ]}
       >
         {renderHeader()}
