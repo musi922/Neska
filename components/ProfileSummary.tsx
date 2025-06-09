@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#4ADE80',
     borderWidth: 2,
-    borderColor: '#FFF',
+    borderColor: '#00B4D8',
   },
   username: {
     fontFamily: FontFamily.medium,
