@@ -78,7 +78,6 @@ export default function HeaderBar({
                   <View style={styles.coinIcon}>
                     <Text style={styles.coinSymbol}>$</Text>
                   </View>
-                  <Text style={styles.coinText}>{userCoins}RWF</Text>
                 </View>
               </TouchableOpacity>
               
@@ -167,14 +166,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -6,
     right: -6,
-    backgroundColor: '#FF6B35',
+    backgroundColor: '#00B4D8',
     borderRadius: 10,
     minWidth: 18,
     height: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FFF',
   },
   notificationText: {
     color: '#FFF',
@@ -195,7 +192,7 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     fontSize: 16,
     fontWeight: '600',
-    color: '#F59E0B',
+    color: '#00B4D8',
     fontFamily: FontFamily.semiBold,
   },
   profileButton: {
@@ -210,7 +207,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#F59E0B',
+    backgroundColor: '#00B4D8',
     justifyContent: 'center',
     alignItems: 'center',
   },
