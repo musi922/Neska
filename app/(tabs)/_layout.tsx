@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, Compass, Plus, Play, LayoutGrid } from 'lucide-react-native';
+import { Home, Compass, Plus, Play, LayoutGrid, DollarSign } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -12,7 +12,7 @@ export default function TabLayout() {
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
 
-  const tabBarHeight = 60 + (Platform.OS === 'ios' ? insets.bottom : 0);
+  const tabBarHeight = 65 + (Platform.OS === 'ios' ? insets.bottom : 0);
 
   return (
     <Tabs
@@ -86,6 +86,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="money"
+        options={{
+          title: 'Wallet',
+          tabBarIcon: ({ color, size }) => (
+            <DollarSign size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
@@ -103,13 +112,13 @@ const styles = StyleSheet.create({
     elevation: 16,
   },
   postButton: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
+    marginTop: 20,
     backgroundColor: '#00B4D8',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
     shadowColor: '#00B4D8',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import { Bell, MessageCircle, Heart, User, Coins } from 'lucide-react-native';
+import { Bell, MessageCircle, Heart, User } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,14 +21,12 @@ interface HeaderBarProps {
   title?: string;
   showActions?: boolean;
   transparent?: boolean;
-  userCoins?: number;
 }
 
 export default function HeaderBar({
   title = 'Neska',
   showActions = true,
   transparent = false,
-  userCoins = 10,
 }: HeaderBarProps) {
   const [showChat, setShowChat] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -92,14 +90,6 @@ export default function HeaderBar({
 
           {showActions && (
             <View style={styles.actions}>
-              {/* Coin Display Button */}
-              <TouchableOpacity style={styles.coinButton}>
-                <View style={styles.coinContainer}>
-                  <View style={styles.coinIcon}>
-                    <Text style={styles.coinSymbol}>$</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
               
               {/* Updated Notification Button with badge */}
               <TouchableOpacity 
@@ -217,22 +207,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  coinButton: {
-    marginLeft: Spacing.md,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  coinContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  coinText: {
-    marginLeft: 4,
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#00B4D8',
-    fontFamily: FontFamily.semiBold,
-  },
   profileButton: {
     width: 34,
     height: 34,
@@ -240,18 +214,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: Spacing.md,
-  },
-  coinIcon: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#00B4D8',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  coinSymbol: {
-    color: '#FFF',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
+  }
 });
