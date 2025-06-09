@@ -12,7 +12,7 @@ export default function TabLayout() {
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
 
-  const tabBarHeight = 60 + (Platform.OS === 'ios' ? insets.bottom : 0);
+  const tabBarHeight = 65 + (Platform.OS === 'ios' ? insets.bottom : 0);
 
   return (
     <Tabs
@@ -103,13 +103,13 @@ const styles = StyleSheet.create({
     elevation: 16,
   },
   postButton: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     borderRadius: 25,
+    marginTop: 20,
     backgroundColor: '#00B4D8',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
     shadowColor: '#00B4D8',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
