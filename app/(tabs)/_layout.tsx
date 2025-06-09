@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, Compass, Plus, Play, LayoutGrid } from 'lucide-react-native';
+import { Home, Compass, Plus, Play, LayoutGrid, DollarSign } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -83,6 +83,15 @@ export default function TabLayout() {
           title: 'Reels',
           tabBarIcon: ({ color, size }) => (
             <LayoutGrid size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="money"
+        options={{
+          title: 'Wallet',
+          tabBarIcon: ({ color, size }) => (
+            <DollarSign size={size} color={color} />
           ),
         }}
       />
