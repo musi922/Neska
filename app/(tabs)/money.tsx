@@ -65,7 +65,7 @@ export default function MoneyScreen() {
   const [selectedPackage, setSelectedPackage] = useState('3');
   const [selectedPayment, setSelectedPayment] = useState('1');
   const [customAmount, setCustomAmount] = useState('');
-  const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'gifts', 'history'
+  const [activeTab, setActiveTab] = useState('buy');
   const [userBalance, setUserBalance] = useState(1250);
   
   const colorScheme = useColorScheme();
