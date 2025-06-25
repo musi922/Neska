@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { View, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, Compass, Plus, Play, LayoutGrid, DollarSign } from 'lucide-react-native';
+import { Home, Compass, Plus, Play, LayoutGrid, DollarSign ,Search} from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from 'react-native';
 import { BlurView } from 'expo-blur';
@@ -12,7 +12,7 @@ export default function TabLayout() {
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
 
-  const tabBarHeight = 65 + (Platform.OS === 'ios' ? insets.bottom : 0);
+  const tabBarHeight = 68 + (Platform.OS === 'ios' ? insets.bottom : 0);
 
   return (
     <Tabs
@@ -71,9 +71,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
+          title: 'Search',
           tabBarIcon: ({ color, size }) => (
-            <Compass size={size} color={color} />
+            <Search size={size} color={color}/>
           ),
         }}
       />
