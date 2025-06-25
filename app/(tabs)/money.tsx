@@ -45,22 +45,12 @@ const coinPackages = [
 const giftCategories = [
   {
     id: '1',
-    name: 'Basic',
-    gifts: [
-      { id: '1', name: 'Heart', icon: '❤️', cost: 1 },
-      { id: '2', name: 'Thumbs Up', icon: '👍', cost: 5 },
-      { id: '3', name: 'Clap', icon: '👏', cost: 10 },
-      { id: '4', name: 'Fire', icon: '🔥', cost: 20 },
-    ]
-  },
-  {
-    id: '2',
     name: 'Premium',
     gifts: [
-      { id: '5', name: 'Rose', icon: '🌹', cost: 50 },
-      { id: '6', name: 'Diamond', icon: '💎', cost: 100 },
-      { id: '7', name: 'Crown', icon: '👑', cost: 200 },
-      { id: '8', name: 'Rocket', icon: '🚀', cost: 500 },
+      { id: '1', name: 'Rose', icon: '🌹', cost: 50 },
+      { id: '2', name: 'Diamond', icon: '💎', cost: 100 },
+      { id: '3', name: 'Crown', icon: '👑', cost: 200 },
+      { id: '4', name: 'Rocket', icon: '🚀', cost: 500 },
     ]
   }
 ];
@@ -75,7 +65,7 @@ export default function MoneyScreen() {
   const [selectedPackage, setSelectedPackage] = useState('3');
   const [selectedPayment, setSelectedPayment] = useState('1');
   const [customAmount, setCustomAmount] = useState('');
-  const [activeTab, setActiveTab] = useState('buy'); // 'buy', 'gifts', 'history'
+  const [activeTab, setActiveTab] = useState('buy');
   const [userBalance, setUserBalance] = useState(1250);
   
   const colorScheme = useColorScheme();
