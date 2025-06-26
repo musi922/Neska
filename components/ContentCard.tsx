@@ -1,10 +1,46 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions, Alert, TextInput, Modal, ScrollView, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
-import { Heart, MessageCircle, Share2, DollarSign, Send, X } from 'lucide-react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  Alert,
+  TextInput,
+  Modal,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  Clipboard,
+  ToastAndroid,
+} from 'react-native';
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  DollarSign,
+  Send,
+  X,
+  Instagram,
+  Facebook,
+  Twitter,
+  Users as UsersIcon,
+  Copy,
+} from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '@/constants/Colors';
-import { FontFamily, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/Theme';
+import {
+  FontFamily,
+  FontSize,
+  Spacing,
+  BorderRadius,
+  Shadow,
+} from '@/constants/Theme';
 import { useColorScheme } from 'react-native';
+import { BlurView } from 'expo-blur';
+import Svg, { Path } from 'react-native-svg';
 
 interface Reply {
   id: string;
@@ -44,6 +80,54 @@ interface ContentCardProps {
 const { width, height } = Dimensions.get('window');
 const cardWidth = width - Spacing.md * 2;
 
+const mockFollowers = [
+  {
+    id: '1',
+    name: 'Sarah K.',
+    avatar:
+      'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+  },
+  {
+    id: '2',
+    name: 'Mike Artist',
+    avatar:
+      'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+  },
+  {
+    id: '3',
+    name: 'Alex Photo',
+    avatar:
+      'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg',
+  },
+  {
+    id: '4',
+    name: 'Lina D.',
+    avatar:
+      'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+  },
+  {
+    id: '5',
+    name: 'Rita M.',
+    avatar:
+      'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+  },
+  {
+    id: '6',
+    name: 'John Doe',
+    avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
+  },
+  {
+    id: '7',
+    name: 'Emily S.',
+    avatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
+  },
+  {
+    id: '8',
+    name: 'Chris B.',
+    avatar: 'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg',
+  },
+];
+
 export default function ContentCard({
   image,
   title,
@@ -64,7 +148,7 @@ export default function ContentCard({
   const [isFollowing, setIsFollowing] = useState(false);
   const [likeCount, setLikeCount] = useState(likes);
   const [isSupporting, setIsSupporting] = useState(false);
-  
+
   // Comment system state
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -74,7 +158,8 @@ export default function ContentCard({
       id: '1',
       text: 'Amazing content! Keep it up! 🔥',
       username: 'sarah_k',
-      avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+      avatar:
+        'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
       timestamp: '2m ago',
       likes: 12,
       isLiked: false,
@@ -86,25 +171,27 @@ export default function ContentCard({
           avatar: avatar,
           timestamp: '1m ago',
           likes: 3,
-          isLiked: false
+          isLiked: false,
         },
         {
           id: '1-2',
           text: 'Love your work too!',
           username: 'alex_photo',
-          avatar: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg',
+          avatar:
+            'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg',
           timestamp: '30s ago',
           likes: 1,
-          isLiked: true
-        }
+          isLiked: true,
+        },
       ],
-      showReplies: false
+      showReplies: false,
     },
     {
-      id: '2', 
+      id: '2',
       text: 'This is so inspiring! Thanks for sharing ❤️',
       username: 'mike_artist',
-      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+      avatar:
+        'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
       timestamp: '5m ago',
       likes: 8,
       isLiked: true,
@@ -116,17 +203,20 @@ export default function ContentCard({
           avatar: avatar,
           timestamp: '4m ago',
           likes: 5,
-          isLiked: false
-        }
+          isLiked: false,
+        },
       ],
-      showReplies: false
-    }
+      showReplies: false,
+    },
   ]);
   const [commentsCount, setCommentsCount] = useState(comments);
 
+  // Add share overlay state
+  const [showShare, setShowShare] = useState(false);
+
   const handleLike = () => {
     setIsLiked(!isLiked);
-    setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
+    setLikeCount((prev) => (isLiked ? prev - 1 : prev + 1));
   };
 
   const handleFollow = () => {
@@ -136,11 +226,9 @@ export default function ContentCard({
   const handleSupport = () => {
     setIsSupporting(!isSupporting);
     if (!isSupporting) {
-      Alert.alert(
-        "Support Creator",
-        `You are now supporting ${username}! 💖`,
-        [{ text: "Awesome!", style: "default" }]
-      );
+      Alert.alert('Support Creator', `You are now supporting ${username}! 💖`, [
+        { text: 'Awesome!', style: 'default' },
+      ]);
     }
   };
 
@@ -157,22 +245,25 @@ export default function ContentCard({
           id: Date.now().toString(),
           text: replyText,
           username: 'you',
-          avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+          avatar:
+            'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
           timestamp: 'now',
           likes: 0,
-          isLiked: false
+          isLiked: false,
         };
-        
-        setCommentsList(prev => prev.map(comment => {
-          if (comment.id === replyingTo) {
-            return {
-              ...comment,
-              replies: [newReply, ...comment.replies],
-              showReplies: true
-            };
-          }
-          return comment;
-        }));
+
+        setCommentsList((prev) =>
+          prev.map((comment) => {
+            if (comment.id === replyingTo) {
+              return {
+                ...comment,
+                replies: [newReply, ...comment.replies],
+                showReplies: true,
+              };
+            }
+            return comment;
+          })
+        );
         setReplyingTo(null);
       } else {
         // Add as new comment
@@ -180,52 +271,57 @@ export default function ContentCard({
           id: Date.now().toString(),
           text: commentText.trim(),
           username: 'you',
-          avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+          avatar:
+            'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
           timestamp: 'now',
           likes: 0,
           isLiked: false,
           replies: [],
-          showReplies: false
+          showReplies: false,
         };
-        setCommentsList(prev => [newComment, ...prev]);
-        setCommentsCount(prev => prev + 1);
+        setCommentsList((prev) => [newComment, ...prev]);
+        setCommentsCount((prev) => prev + 1);
       }
       setCommentText('');
     }
   };
 
   const handleCommentLike = (commentId: string) => {
-    setCommentsList(prev => prev.map(comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          isLiked: !comment.isLiked,
-          likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1
-        };
-      }
-      return comment;
-    }));
+    setCommentsList((prev) =>
+      prev.map((comment) => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            isLiked: !comment.isLiked,
+            likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
+          };
+        }
+        return comment;
+      })
+    );
   };
 
   const handleReplyLike = (commentId: string, replyId: string) => {
-    setCommentsList(prev => prev.map(comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          replies: comment.replies.map(reply => {
-            if (reply.id === replyId) {
-              return {
-                ...reply,
-                isLiked: !reply.isLiked,
-                likes: reply.isLiked ? reply.likes - 1 : reply.likes + 1
-              };
-            }
-            return reply;
-          })
-        };
-      }
-      return comment;
-    }));
+    setCommentsList((prev) =>
+      prev.map((comment) => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            replies: comment.replies.map((reply) => {
+              if (reply.id === replyId) {
+                return {
+                  ...reply,
+                  isLiked: !reply.isLiked,
+                  likes: reply.isLiked ? reply.likes - 1 : reply.likes + 1,
+                };
+              }
+              return reply;
+            }),
+          };
+        }
+        return comment;
+      })
+    );
   };
 
   const handleCommentReply = (commentId: string, username: string) => {
@@ -234,15 +330,17 @@ export default function ContentCard({
   };
 
   const toggleReplies = (commentId: string) => {
-    setCommentsList(prev => prev.map(comment => {
-      if (comment.id === commentId) {
-        return {
-          ...comment,
-          showReplies: !comment.showReplies
-        };
-      }
-      return comment;
-    }));
+    setCommentsList((prev) =>
+      prev.map((comment) => {
+        if (comment.id === commentId) {
+          return {
+            ...comment,
+            showReplies: !comment.showReplies,
+          };
+        }
+        return comment;
+      })
+    );
   };
 
   const cancelReply = () => {
@@ -261,13 +359,27 @@ export default function ContentCard({
     }
   };
 
+  // Handler for share button
+  const handleShare = () => {
+    setShowShare(true);
+  };
+  const closeShare = () => {
+    setShowShare(false);
+  };
+
+  // Handler for copy link
+  const handleCopyLink = () => {
+    Clipboard.setString('https://neska.app/content/' + username);
+    ToastAndroid.show('Link copied!', ToastAndroid.SHORT);
+  };
+
   return (
     <>
       <TouchableOpacity
         style={[
           styles.container,
           Shadow.md,
-          { backgroundColor: colors.card, borderColor: colors.border }
+          { backgroundColor: colors.card, borderColor: colors.border },
         ]}
         onPress={handleCardPress}
         activeOpacity={0.9}
@@ -276,19 +388,21 @@ export default function ContentCard({
         <View style={styles.topUserInfoContainer}>
           <Image source={{ uri: avatar }} style={styles.topAvatar} />
           <View style={styles.topUserTextContainer}>
-            <Text style={[styles.topUsername, { color: colors.text }]}>{username}</Text>
+            <Text style={[styles.topUsername, { color: colors.text }]}>
+              {username}
+            </Text>
             {verified && (
               <View style={styles.verifiedBadge}>
                 <Text style={styles.verifiedText}>✓</Text>
               </View>
             )}
           </View>
-          
+
           {isLive ? (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[
                 styles.supportButton,
-                isSupporting && styles.supportingButton
+                isSupporting && styles.supportingButton,
               ]}
               onPress={handleSupport}
             >
@@ -298,17 +412,16 @@ export default function ContentCard({
               </Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[
                 styles.followButton,
-                isFollowing && styles.followingButton
+                isFollowing && styles.followingButton,
               ]}
               onPress={handleFollow}
             >
-              <Text style={[
-                styles.followText,
-                isFollowing && styles.followingText
-              ]}>
+              <Text
+                style={[styles.followText, isFollowing && styles.followingText]}
+              >
                 {isFollowing ? 'Following' : 'Follow'}
               </Text>
             </TouchableOpacity>
@@ -317,7 +430,7 @@ export default function ContentCard({
 
         <View style={styles.imageContainer}>
           <Image source={{ uri: image }} style={styles.image} />
-          
+
           {isLive && (
             <View style={styles.liveIndicator}>
               <View style={styles.liveDot} />
@@ -328,49 +441,54 @@ export default function ContentCard({
             </View>
           )}
         </View>
-        
+
         <View style={styles.contentContainer}>
           {/* Actions moved above text */}
           <View style={styles.actionsContainer}>
             <View style={styles.actionGroup}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.actionButton}
                 onPress={handleLike}
                 activeOpacity={0.7}
               >
-                <Heart 
-                  size={22} 
+                <Heart
+                  size={22}
                   color={isLiked ? '#EF4444' : colors.text}
                   fill={isLiked ? '#EF4444' : 'none'}
                 />
-                <Text style={[
-                  styles.actionText, 
-                  { color: isLiked ? '#EF4444' : colors.text }
-                ]}>
+                <Text
+                  style={[
+                    styles.actionText,
+                    { color: isLiked ? '#EF4444' : colors.text },
+                  ]}
+                >
                   {likeCount}
                 </Text>
               </TouchableOpacity>
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 style={styles.actionButton}
                 onPress={handleComments}
                 activeOpacity={0.7}
               >
                 <MessageCircle size={22} color={colors.text} />
-                <Text style={[styles.actionText, { color: colors.text }]}>{commentsCount}</Text>
+                <Text style={[styles.actionText, { color: colors.text }]}>
+                  {commentsCount}
+                </Text>
               </TouchableOpacity>
             </View>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.shareButton}
               activeOpacity={0.7}
+              onPress={handleShare}
             >
               <Share2 size={20} color={colors.text} />
             </TouchableOpacity>
           </View>
 
           {/* Title with much smaller font */}
-          <Text 
+          <Text
             style={[styles.title, { color: colors.text }]}
             numberOfLines={2}
           >
@@ -388,22 +506,32 @@ export default function ContentCard({
       >
         <View style={styles.modalOverlay}>
           <Pressable style={styles.modalBackdrop} onPress={closeComments} />
-          
+
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={[styles.modalContainer, { backgroundColor: colors.background }]}
+            style={[
+              styles.modalContainer,
+              { backgroundColor: colors.background },
+            ]}
           >
             {/* Modal Header */}
-            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+            <View
+              style={[styles.modalHeader, { borderBottomColor: colors.border }]}
+            >
               <View style={styles.modalHandle} />
-              <Text style={[styles.modalTitle, { color: colors.text }]}>Comments</Text>
-              <TouchableOpacity onPress={closeComments} style={styles.closeButton}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                Comments
+              </Text>
+              <TouchableOpacity
+                onPress={closeComments}
+                style={styles.closeButton}
+              >
                 <X size={20} color={colors.text} />
               </TouchableOpacity>
             </View>
 
             {/* Comments List */}
-            <ScrollView 
+            <ScrollView
               style={styles.commentsList}
               showsVerticalScrollIndicator={false}
             >
@@ -411,41 +539,69 @@ export default function ContentCard({
                 <View key={comment.id}>
                   {/* Main Comment */}
                   <View style={styles.commentItem}>
-                    <Image source={{ uri: comment.avatar }} style={styles.commentAvatar} />
+                    <Image
+                      source={{ uri: comment.avatar }}
+                      style={styles.commentAvatar}
+                    />
                     <View style={styles.commentContent}>
                       <View style={styles.commentTextContainer}>
-                        <Text style={[styles.commentUsername, { color: colors.text }]}>
+                        <Text
+                          style={[
+                            styles.commentUsername,
+                            { color: colors.text },
+                          ]}
+                        >
                           {comment.username}
                         </Text>
-                        <Text style={[styles.commentText, { color: colors.text }]}>
+                        <Text
+                          style={[styles.commentText, { color: colors.text }]}
+                        >
                           {comment.text}
                         </Text>
                       </View>
                       <View style={styles.commentActions}>
-                        <Text style={[styles.commentTimestamp, { color: colors.secondary }]}>
+                        <Text
+                          style={[
+                            styles.commentTimestamp,
+                            { color: colors.secondary },
+                          ]}
+                        >
                           {comment.timestamp}
                         </Text>
                         {comment.likes > 0 && (
-                          <Text style={[styles.commentLikesCount, { color: colors.secondary }]}>
-                            {comment.likes} {comment.likes === 1 ? 'like' : 'likes'}
+                          <Text
+                            style={[
+                              styles.commentLikesCount,
+                              { color: colors.secondary },
+                            ]}
+                          >
+                            {comment.likes}{' '}
+                            {comment.likes === 1 ? 'like' : 'likes'}
                           </Text>
                         )}
-                        <TouchableOpacity 
-                          onPress={() => handleCommentReply(comment.id, comment.username)}
+                        <TouchableOpacity
+                          onPress={() =>
+                            handleCommentReply(comment.id, comment.username)
+                          }
                           style={styles.replyButton}
                         >
-                          <Text style={[styles.replyText, { color: colors.secondary }]}>
+                          <Text
+                            style={[
+                              styles.replyText,
+                              { color: colors.secondary },
+                            ]}
+                          >
                             Reply
                           </Text>
                         </TouchableOpacity>
                       </View>
                     </View>
-                    <TouchableOpacity 
-                      onPress={() => handleCommentLike(comment.id)} 
+                    <TouchableOpacity
+                      onPress={() => handleCommentLike(comment.id)}
                       style={styles.commentLikeButton}
                     >
-                      <Heart 
-                        size={12} 
+                      <Heart
+                        size={12}
                         color={comment.isLiked ? '#EF4444' : colors.secondary}
                         fill={comment.isLiked ? '#EF4444' : 'none'}
                       />
@@ -454,82 +610,135 @@ export default function ContentCard({
 
                   {/* View Replies Button */}
                   {comment.replies.length > 0 && (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={() => toggleReplies(comment.id)}
                       style={styles.viewRepliesButton}
                     >
                       <View style={styles.replyLine} />
-                      <Text style={[styles.viewRepliesText, { color: colors.secondary }]}>
-                        {comment.showReplies ? 'Hide replies' : `View ${comment.replies.length} ${comment.replies.length === 1 ? 'reply' : 'replies'}`}
+                      <Text
+                        style={[
+                          styles.viewRepliesText,
+                          { color: colors.secondary },
+                        ]}
+                      >
+                        {comment.showReplies
+                          ? 'Hide replies'
+                          : `View ${comment.replies.length} ${
+                              comment.replies.length === 1 ? 'reply' : 'replies'
+                            }`}
                       </Text>
                     </TouchableOpacity>
                   )}
 
                   {/* Replies */}
-                  {comment.showReplies && comment.replies.map((reply) => (
-                    <View key={reply.id} style={styles.replyItem}>
-                      <Image source={{ uri: reply.avatar }} style={styles.replyAvatar} />
-                      <View style={styles.commentContent}>
-                        <View style={styles.commentTextContainer}>
-                          <Text style={[styles.commentUsername, { color: colors.text }]}>
-                            {reply.username}
-                          </Text>
-                          <Text style={[styles.commentText, { color: colors.text }]}>
-                            {reply.text}
-                          </Text>
-                        </View>
-                        <View style={styles.commentActions}>
-                          <Text style={[styles.commentTimestamp, { color: colors.secondary }]}>
-                            {reply.timestamp}
-                          </Text>
-                          {reply.likes > 0 && (
-                            <Text style={[styles.commentLikesCount, { color: colors.secondary }]}>
-                              {reply.likes} {reply.likes === 1 ? 'like' : 'likes'}
-                            </Text>
-                          )}
-                          <TouchableOpacity 
-                            onPress={() => handleCommentReply(comment.id, reply.username)}
-                            style={styles.replyButton}
-                          >
-                            <Text style={[styles.replyText, { color: colors.secondary }]}>
-                              Reply
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                      <TouchableOpacity 
-                        onPress={() => handleReplyLike(comment.id, reply.id)} 
-                        style={styles.commentLikeButton}
-                      >
-                        <Heart 
-                          size={12} 
-                          color={reply.isLiked ? '#EF4444' : colors.secondary}
-                          fill={reply.isLiked ? '#EF4444' : 'none'}
+                  {comment.showReplies &&
+                    comment.replies.map((reply) => (
+                      <View key={reply.id} style={styles.replyItem}>
+                        <Image
+                          source={{ uri: reply.avatar }}
+                          style={styles.replyAvatar}
                         />
-                      </TouchableOpacity>
-                    </View>
-                  ))}
+                        <View style={styles.commentContent}>
+                          <View style={styles.commentTextContainer}>
+                            <Text
+                              style={[
+                                styles.commentUsername,
+                                { color: colors.text },
+                              ]}
+                            >
+                              {reply.username}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.commentText,
+                                { color: colors.text },
+                              ]}
+                            >
+                              {reply.text}
+                            </Text>
+                          </View>
+                          <View style={styles.commentActions}>
+                            <Text
+                              style={[
+                                styles.commentTimestamp,
+                                { color: colors.secondary },
+                              ]}
+                            >
+                              {reply.timestamp}
+                            </Text>
+                            {reply.likes > 0 && (
+                              <Text
+                                style={[
+                                  styles.commentLikesCount,
+                                  { color: colors.secondary },
+                                ]}
+                              >
+                                {reply.likes}{' '}
+                                {reply.likes === 1 ? 'like' : 'likes'}
+                              </Text>
+                            )}
+                            <TouchableOpacity
+                              onPress={() =>
+                                handleCommentReply(comment.id, reply.username)
+                              }
+                              style={styles.replyButton}
+                            >
+                              <Text
+                                style={[
+                                  styles.replyText,
+                                  { color: colors.secondary },
+                                ]}
+                              >
+                                Reply
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                        <TouchableOpacity
+                          onPress={() => handleReplyLike(comment.id, reply.id)}
+                          style={styles.commentLikeButton}
+                        >
+                          <Heart
+                            size={12}
+                            color={reply.isLiked ? '#EF4444' : colors.secondary}
+                            fill={reply.isLiked ? '#EF4444' : 'none'}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
                 </View>
               ))}
             </ScrollView>
 
             {/* Comment Input - Removed replying indicator */}
-            <View style={[styles.commentInputContainer, { 
-              borderTopColor: colors.border,
-              backgroundColor: colors.background 
-            }]}>
+            <View
+              style={[
+                styles.commentInputContainer,
+                {
+                  borderTopColor: colors.border,
+                  backgroundColor: colors.background,
+                },
+              ]}
+            >
               <View style={styles.inputRow}>
-                <Image 
-                  source={{ uri: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg' }} 
-                  style={styles.inputAvatar} 
+                <Image
+                  source={{
+                    uri: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+                  }}
+                  style={styles.inputAvatar}
                 />
                 <TextInput
-                  style={[styles.commentInput, { 
-                    backgroundColor: colors.card,
-                    color: colors.text,
-                    borderColor: colors.border
-                  }]}
-                  placeholder={replyingTo ? "Write a reply..." : "Add a comment..."}
+                  style={[
+                    styles.commentInput,
+                    {
+                      backgroundColor: colors.card,
+                      color: colors.text,
+                      borderColor: colors.border,
+                    },
+                  ]}
+                  placeholder={
+                    replyingTo ? 'Write a reply...' : 'Add a comment...'
+                  }
                   placeholderTextColor={colors.secondary}
                   value={commentText}
                   onChangeText={setCommentText}
@@ -540,15 +749,160 @@ export default function ContentCard({
                   onPress={handleSendComment}
                   style={[
                     styles.sendButton,
-                    { backgroundColor: commentText.trim() ? '#00B4D8' : colors.border }
+                    {
+                      backgroundColor: commentText.trim()
+                        ? '#00B4D8'
+                        : colors.border,
+                    },
                   ]}
                   disabled={!commentText.trim()}
                 >
-                  <Send size={16} color={commentText.trim() ? '#FFF' : colors.secondary} />
+                  <Send
+                    size={16}
+                    color={commentText.trim() ? '#FFF' : colors.secondary}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
           </KeyboardAvoidingView>
+        </View>
+      </Modal>
+
+      {/* Share Modal */}
+      <Modal
+        visible={showShare}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeShare}
+      >
+        <View style={styles.shareModalOverlay}>
+          <Pressable style={styles.modalBackdrop} onPress={closeShare} />
+          <View
+            style={[
+              styles.modalContainer,
+              { backgroundColor: colors.background, padding: 20 },
+            ]}
+          >
+            {/* Handle */}
+            <View style={styles.shareModalHandle} />
+            {/* Header */}
+            <View style={styles.shareModalHeader}>
+              <Text style={[styles.shareModalTitle, { color: '#00B4D8' }]}>
+                Share
+              </Text>
+              <TouchableOpacity onPress={closeShare} style={styles.closeButton}>
+                <X size={20} color={colors.text} />
+              </TouchableOpacity>
+            </View>
+            {/* Add to Story and Copy Link Row */}
+            <View style={styles.storyAndCopyRow}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.socialIconsScroll}
+                contentContainerStyle={styles.socialIconsRow}
+              >
+                <View style={[styles.addToStoryColumn, { marginTop: 10 }]}>
+                  <View style={styles.addToStoryAvatarWrapper}>
+                    <Image
+                      source={{ uri: mockFollowers[0].avatar }}
+                      style={styles.addToStoryAvatar}
+                    />
+                  </View>
+                  <Text style={styles.addToStoryTextSmall}>Add to Story</Text>
+                </View>
+                <TouchableOpacity style={styles.socialIconButtonNoBg}>
+                  <Copy size={22} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialIconButtonNoBg}>
+                  <Instagram size={22} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialIconButtonNoBg}>
+                  <Facebook size={22} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialIconButtonNoBg}>
+                  <Twitter size={22} color="#fff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialIconButtonNoBg}>
+                  {/* TikTok SVG icon */}
+                  <Svg width={22} height={22} viewBox="0 0 48 48">
+                    <Path
+                      d="M41.5 16.5c-3.6 0-6.5-2.9-6.5-6.5V6h-6v24.5c0 2.2-1.8 4-4 4s-4-1.8-4-4 1.8-4 4-4c.7 0 1.4.2 2 .5v-6.3c-.7-.1-1.3-.2-2-.2-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10V22.7c1.9 1.1 4.1 1.8 6.5 1.8v-8z"
+                      fill="#fff"
+                    />
+                  </Svg>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.socialIconButtonNoBg}>
+                  {/* Accurate Snapchat ghost SVG icon */}
+                  <Svg width={22} height={22} viewBox="0 0 48 48">
+                    <Path
+                      d="M24 6c-6.6 0-12 5.4-12 12 0 7.5 7.2 13.7 11.2 16.7.5.4 1.1.4 1.6 0C28.8 31.7 36 25.5 36 18c0-6.6-5.4-12-12-12z"
+                      fill="#fff"
+                      stroke="#000"
+                      strokeWidth="1.5"
+                    />
+                    <Path
+                      d="M16 36c1.5 1.5 4.5 2 8 2s6.5-.5 8-2"
+                      stroke="#000"
+                      strokeWidth="1.2"
+                      fill="none"
+                    />
+                    <Path
+                      d="M20 18c.5 1 1.5 1 2 0"
+                      stroke="#000"
+                      strokeWidth="1"
+                      fill="none"
+                    />
+                    <Path
+                      d="M26 18c.5 1 1.5 1 2 0"
+                      stroke="#000"
+                      strokeWidth="1"
+                      fill="none"
+                    />
+                  </Svg>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+            <Text style={[styles.followerListTitle, { color: '#fff' }]}>
+              Share to friends
+            </Text>
+            <View style={styles.friendsRowsContainer}>
+              <View style={styles.friendsRow}>
+                {mockFollowers.slice(0, 4).map((follower) => (
+                  <View key={follower.id} style={styles.followerItem}>
+                    <Image
+                      source={{ uri: follower.avatar }}
+                      style={styles.followerAvatar}
+                    />
+                    <Text
+                      style={[styles.followerName, { color: '#fff' }]}
+                      numberOfLines={1}
+                    >
+                      {follower.name}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              {mockFollowers.length > 4 && (
+                <View style={styles.friendsRow}>
+                  {mockFollowers.slice(4).map((follower) => (
+                    <View key={follower.id} style={styles.followerItem}>
+                      <Image
+                        source={{ uri: follower.avatar }}
+                        style={styles.followerAvatar}
+                      />
+                      <Text
+                        style={[styles.followerName, { color: '#fff' }]}
+                        numberOfLines={1}
+                      >
+                        {follower.name}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+          </View>
         </View>
       </Modal>
     </>
@@ -799,7 +1153,7 @@ const styles = StyleSheet.create({
   },
   commentTimestamp: {
     fontFamily: FontFamily.regular,
-    fontSize: 9, 
+    fontSize: 9,
     marginRight: 12,
   },
   commentLikesCount: {
@@ -877,5 +1231,117 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  shareModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  shareModalContainer: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+    paddingBottom: 40,
+    minHeight: 320,
+    elevation: 10,
+    overflow: 'hidden',
+  },
+  shareModalHandle: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 12,
+  },
+  shareModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  shareModalTitle: {
+    fontFamily: FontFamily.semiBold,
+    fontSize: 18,
+    color: '#222',
+  },
+  storyAndCopyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 18,
+  },
+  socialIconsScroll: {
+    marginBottom: 18,
+  },
+  socialIconsRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  socialIconButtonNoBg: {
+    backgroundColor: 'transparent',
+    borderRadius: 16,
+    padding: 10,
+    marginRight: 14,
+  },
+  followerListTitle: {
+    fontFamily: FontFamily.medium,
+    fontSize: 13,
+    color: '#888',
+    marginBottom: 8,
+  },
+  friendsRowsContainer: {
+    marginTop: 8,
+  },
+  friendsRow: {
+    flexDirection: 'row',
+    marginBottom: 4,
+    justifyContent: 'space-between',
+  },
+  followerItem: {
+    alignItems: 'center',
+    marginRight: 18,
+    width: 60,
+  },
+  followerAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginBottom: 4,
+    borderWidth: 2,
+    borderColor: '#00B4D8',
+  },
+  followerName: {
+    fontFamily: FontFamily.regular,
+    fontSize: 11,
+    color: '#222',
+    textAlign: 'center',
+  },
+  addToStoryTextSmall: {
+    color: '#fff',
+    fontFamily: FontFamily.medium,
+    fontSize: 10,
+    marginLeft: 6,
+    marginTop: 2,
+  },
+  addToStoryColumn: {
+    alignItems: 'center',
+    marginRight: 18,
+  },
+  addToStoryAvatarWrapper: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#00B4D8',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  addToStoryAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 2,
+    borderColor: '#fff',
   },
 });
