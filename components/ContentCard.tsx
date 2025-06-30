@@ -519,7 +519,12 @@ export default function ContentCard({
               style={[styles.modalHeader, { borderBottomColor: colors.border }]}
             >
               <View style={styles.modalHandle} />
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
+              <Text
+                style={[
+                  styles.modalTitle,
+                  { color: '#00B4D8', textAlign: 'left', flex: 1 },
+                ]}
+              >
                 Comments
               </Text>
               <TouchableOpacity
