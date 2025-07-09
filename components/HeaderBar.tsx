@@ -24,7 +24,7 @@ interface HeaderBarProps {
 }
 
 export default function HeaderBar({
-  title = 'Neska',
+  title = 'GEN Z',
   showActions = true,
   transparent = false,
 }: HeaderBarProps) {

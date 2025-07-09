@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { FontFamily, FontSize, Spacing, BorderRadius } from '@/constants/Theme';
 
@@ -10,6 +17,7 @@ interface LivestreamPreviewProps {
   viewers: number;
   category: string;
   onPress?: () => void;
+  style?: any;
 }
 
 const { width } = Dimensions.get('window');
@@ -21,11 +29,12 @@ export default function LivestreamPreview({
   avatar,
   viewers,
   category,
-  onPress
+  onPress,
+  style,
 }: LivestreamPreviewProps) {
   return (
-    <TouchableOpacity 
-      style={styles.container}
+    <TouchableOpacity
+      style={[styles.container, style]}
       onPress={onPress}
       activeOpacity={0.9}
     >
@@ -35,13 +44,13 @@ export default function LivestreamPreview({
           colors={['transparent', 'rgba(0,0,0,0.8)']}
           style={styles.gradient}
         />
-        
+
         <View style={styles.liveIndicator}>
           <View style={styles.liveDot} />
           <Text style={styles.liveText}>LIVE</Text>
           <Text style={styles.viewersText}>{viewers} watching</Text>
         </View>
-        
+
         <View style={styles.infoContainer}>
           <View style={styles.userContainer}>
             <Image source={{ uri: avatar }} style={styles.avatar} />
