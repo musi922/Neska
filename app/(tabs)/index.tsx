@@ -11,26 +11,26 @@ import CategoryChip from '@/components/CategoryChip';
 import ProfileSummary from '@/components/ProfileSummary';
 
 // Mock data
-const categories = [
-  'For You', 'Live', 'Following', 'Room'
-];
+const categories = ['For You', 'Live', 'Following', 'Room'];
 
 const liveStreams = [
   {
     id: '1',
     image: 'https://images.pexels.com/photos/2263936/pexels-photo-2263936.jpeg',
     username: 'musiclover243',
-    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+    avatar:
+      'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
     viewers: 1542,
-    category: 'Music'
+    category: 'Music',
   },
   {
     id: '2',
     image: 'https://images.pexels.com/photos/9072388/pexels-photo-9072388.jpeg',
     username: 'gamerpro99',
-    avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg',
+    avatar:
+      'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg',
     viewers: 872,
-    category: 'Gaming'
+    category: 'Gaming',
   },
   {
     id: '3',
@@ -39,41 +39,78 @@ const liveStreams = [
     username: 'chef_marie',
     avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg',
     viewers: 693,
-    category: 'Food'
-  }
+    category: 'Food',
+  },
+  {
+    id: '4',
+    image: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+    username: 'amani_j',
+    avatar:
+      'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+    viewers: 321,
+    category: 'Music',
+  },
+  {
+    id: '5',
+    image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    username: 'dance_queen',
+    avatar:
+      'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    viewers: 210,
+    category: 'Dance',
+  },
+  {
+    id: '6',
+    image: 'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
+    username: 'comedian_k',
+    avatar:
+      'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
+    viewers: 145,
+    category: 'Comedy',
+  },
 ];
 
 const creators = [
   {
     id: '1',
     username: 'amani_j',
-    avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
-    isLive: true
+    avatar:
+      'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+    isLive: true,
+    following: true,
   },
   {
     id: '2',
     username: 'tech_eric',
-    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
-    isLive: false
+    avatar:
+      'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+    isLive: false,
+    following: false,
   },
   {
     id: '3',
     username: 'dance_queen',
-    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
-    isLive: true
+    avatar:
+      'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    isLive: true,
+    following: true,
   },
   {
     id: '4',
     username: 'artist_paul',
-    avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg',
-    isLive: false
+    avatar:
+      'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg',
+    isLive: false,
+    following: false,
   },
   {
     id: '5',
     username: 'comedian_k',
-    avatar: 'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
-    isLive: true
-  }
+    avatar:
+      'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
+    isLive: true,
+    following: true,
+  },
 ];
 
 const feedContent = [
@@ -86,7 +123,8 @@ const feedContent = [
     likes: 2463,
     comments: 184,
     verified: true,
-    isLive: false
+    isLive: false,
+    following: false,
   },
   {
     id: '2',
@@ -97,19 +135,22 @@ const feedContent = [
     likes: 1872,
     comments: 92,
     verified: true,
-    isLive: false
+    isLive: false,
+    following: false,
   },
   {
     id: '3',
     image: 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg',
     title: 'Join my live class tomorrow on digital marketing strategies',
     username: 'business_coach',
-    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+    avatar:
+      'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     likes: 843,
     comments: 76,
     verified: false,
-    isLive: false
-  }
+    isLive: false,
+    following: true,
+  },
 ];
 
 export default function HomeScreen() {
@@ -117,16 +158,23 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
-  
+
+  // Filtered data for Following
+  const followingFeed = feedContent.filter((item) => item.following);
+  const followingCreators = creators.filter((c) => c.following);
+  const followingLiveStreams = liveStreams.filter((stream) => {
+    // Simulate: show live streams from followed creators only
+    return followingCreators.some((c) => c.username === stream.username);
+  });
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <HeaderBar />
-      
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: 60 + insets.top }
+          { paddingTop: 60 + insets.top },
         ]}
       >
         {/* Categories */}
@@ -146,69 +194,154 @@ export default function HomeScreen() {
             ))}
           </ScrollView>
         </View>
-        
-        {/* Popular Creators */}
-        <View style={styles.section}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.creatorsScroll}
-          >
-            {creators.map((creator) => (
-              <ProfileSummary
-                key={creator.id}
-                avatar={creator.avatar}
-                username={creator.username}
-                isLive={creator.isLive}
-              />
-            ))}
-          </ScrollView>
-        </View>
-        
-        {/* Live Now */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Live Now
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.liveScroll}
-          >
-            {liveStreams.map((stream) => (
-              <LivestreamPreview
-                key={stream.id}
-                image={stream.image}
-                username={stream.username}
-                avatar={stream.avatar}
-                viewers={stream.viewers}
-                category={stream.category}
-              />
-            ))}
-          </ScrollView>
-        </View>
-        
-        {/* For You Feed */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            For You
-          </Text>
-          <View style={styles.feedContainer}>
-            {feedContent.map((content) => (
-              <ContentCard
-                key={content.id}
-                image={content.image}
-                title={content.title}
-                username={content.username}
-                avatar={content.avatar}
-                likes={content.likes}
-                comments={content.comments}
-                verified={content.verified}
-                isLive={content.isLive}
-              />
-            ))}
+
+        {/* Popular Creators (show for all except 'Live') */}
+        {activeCategory !== 'Live' && (
+          <View style={styles.section}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.creatorsScroll}
+            >
+              {(activeCategory === 'Following'
+                ? followingCreators
+                : creators
+              ).map((creator) => (
+                <ProfileSummary
+                  key={creator.id}
+                  avatar={creator.avatar}
+                  username={creator.username}
+                  isLive={creator.isLive}
+                />
+              ))}
+            </ScrollView>
           </View>
-        </View>
+        )}
+
+        {/* Live Now (horizontal for For You/Following, vertical for Live) */}
+        {(activeCategory === 'For You' ||
+          activeCategory === 'Live' ||
+          activeCategory === 'Following') && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Live Now
+            </Text>
+            {activeCategory === 'Live' ? (
+              <View style={styles.liveColumn}>
+                {liveStreams.map((stream) => (
+                  <LivestreamPreview
+                    key={stream.id}
+                    image={stream.image}
+                    username={stream.username}
+                    avatar={stream.avatar}
+                    viewers={stream.viewers}
+                    category={stream.category}
+                    style={{ width: '100%', marginRight: 0 }}
+                  />
+                ))}
+              </View>
+            ) : (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.liveScroll}
+              >
+                {activeCategory === 'Following' ? (
+                  followingLiveStreams.length === 0 ? (
+                    <Text
+                      style={{
+                        color: colors.text,
+                        opacity: 0.6,
+                        marginLeft: 16,
+                        alignSelf: 'center',
+                      }}
+                    >
+                      No one you follow is live right now.
+                    </Text>
+                  ) : (
+                    followingLiveStreams.map((stream) => (
+                      <LivestreamPreview
+                        key={stream.id}
+                        image={stream.image}
+                        username={stream.username}
+                        avatar={stream.avatar}
+                        viewers={stream.viewers}
+                        category={stream.category}
+                      />
+                    ))
+                  )
+                ) : (
+                  liveStreams.map((stream) => (
+                    <LivestreamPreview
+                      key={stream.id}
+                      image={stream.image}
+                      username={stream.username}
+                      avatar={stream.avatar}
+                      viewers={stream.viewers}
+                      category={stream.category}
+                    />
+                  ))
+                )}
+              </ScrollView>
+            )}
+          </View>
+        )}
+
+        {/* For You Feed (show only for 'For You') */}
+        {activeCategory === 'For You' && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              For You
+            </Text>
+            <View style={styles.feedContainer}>
+              {feedContent.map((content) => (
+                <ContentCard
+                  key={content.id}
+                  image={content.image}
+                  title={content.title}
+                  username={content.username}
+                  avatar={content.avatar}
+                  likes={content.likes}
+                  comments={content.comments}
+                  verified={content.verified}
+                  isLive={content.isLive}
+                />
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Following Feed (show only for 'Following') */}
+        {activeCategory === 'Following' && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Following
+            </Text>
+            <View style={styles.feedContainer}>
+              {followingFeed.length === 0 ? (
+                <Text style={{ color: colors.text, opacity: 0.6 }}>
+                  No posts from people you follow yet.
+                </Text>
+              ) : (
+                followingFeed.map((content) => (
+                  <ContentCard
+                    key={content.id}
+                    image={content.image}
+                    title={content.title}
+                    username={content.username}
+                    avatar={content.avatar}
+                    likes={content.likes}
+                    comments={content.comments}
+                    verified={content.verified}
+                    isLive={content.isLive}
+                    isFollowing={true}
+                  />
+                ))
+              )}
+            </View>
+          </View>
+        )}
+        {/* Room: leave as-is for now */}
       </ScrollView>
     </View>
   );
@@ -245,5 +378,9 @@ const styles = StyleSheet.create({
   },
   feedContainer: {
     alignItems: 'center',
+  },
+  liveColumn: {
+    gap: 16,
+    paddingHorizontal: Spacing.md,
   },
 });
