@@ -75,6 +75,7 @@ interface ContentCardProps {
   isLive?: boolean;
   viewers?: number;
   onPress?: () => void;
+  isFollowing?: boolean;
 }
 
 const { width, height } = Dimensions.get('window');
@@ -139,13 +140,14 @@ export default function ContentCard({
   isLive = false,
   viewers,
   onPress,
+  isFollowing: isFollowingProp = false,
 }: ContentCardProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
 
   // State for interactive elements
   const [isLiked, setIsLiked] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(isFollowingProp);
   const [likeCount, setLikeCount] = useState(likes);
   const [isSupporting, setIsSupporting] = useState(false);
 

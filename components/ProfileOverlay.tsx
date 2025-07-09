@@ -171,8 +171,8 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
   const neskaColor = '#00B4D8';
 
   const tabs = [
-    { id: 'posts', icon: Grid3X3, label: '' },
-    { id: 'reels', icon: Play, label: '' },
+    { id: 'posts', icon: Camera, label: 'Pics' },
+    { id: 'reels', icon: Play, label: 'Vids' },
   ];
 
   const formatNumber = (num: number) => {
@@ -200,8 +200,6 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
   const renderPost = ({ item }: { item: any }) => (
     <TouchableOpacity style={styles.postItem}>
       <Image source={{ uri: item.thumbnail }} style={styles.postImage} />
-
-      {/* Video indicator */}
       {item.type === 'video' && (
         <View style={styles.videoIndicator}>
           <Play size={16} color="#FFF" fill="#FFF" />
@@ -213,13 +211,10 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
   const renderReel = ({ item }: { item: any }) => (
     <TouchableOpacity style={styles.reelItem}>
       <Image source={{ uri: item.thumbnail }} style={styles.reelImage} />
-
-      {/* Video indicator */}
+      {/* Video indicator and view count for reels */}
       <View style={styles.videoIndicator}>
         <Play size={20} color="#FFF" fill="#FFF" />
       </View>
-
-      {/* View count */}
       <View style={styles.reelStats}>
         <Eye size={12} color="#FFF" />
         <Text style={styles.reelViewCount}>{formatNumber(item.likes)}</Text>
@@ -242,31 +237,36 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
         />
       )}
 
+      {/* Sticky Header Bar OUTSIDE the ScrollView */}
+      <View
+        style={[
+          styles.stickyHeaderBar,
+          { backgroundColor: colors.background, paddingTop: insets.top + 10 },
+        ]}
+      >
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <X size={24} color={colors.text} />
+        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>
+          {userProfile.username}
+        </Text>
+        <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
+          <MoreHorizontal size={24} color={colors.text} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Scrollable Content */}
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={{ paddingTop: 56 + insets.top }}
         showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[1]}
       >
-        {/* Header */}
-        <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <X size={24} color={colors.text} />
-          </TouchableOpacity>
-
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
-            {userProfile.username}
-          </Text>
-
-          <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
-            <MoreHorizontal size={24} color={colors.text} />
-          </TouchableOpacity>
-        </View>
-
         {/* Profile Section */}
         <View style={styles.profileSection}>
-          {/* Top Row: Avatar + Stats */}
-          <View style={styles.topRow}>
-            {/* Avatar */}
+          {/* Avatar and elite badge */}
+          <View
+            style={{ alignItems: 'center', marginTop: 1, marginBottom: 10 }}
+          >
             <View style={styles.avatarContainer}>
               <Image
                 source={{ uri: userProfile.avatar }}
@@ -278,44 +278,42 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
                 </View>
               )}
             </View>
-
-            {/* Stats */}
-            <View style={styles.statsRow}>
-              <View style={styles.statItem}>
-                <Text style={[styles.statNumber, { color: colors.text }]}>
-                  {formatNumber(userProfile.stats.posts)}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.text }]}>
-                  Posts
-                </Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statNumber, { color: colors.text }]}>
-                  {formatNumber(userProfile.stats.followers)}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.text }]}>
-                  Followers
-                </Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statNumber, { color: colors.text }]}>
-                  {formatNumber(userProfile.stats.following)}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.text }]}>
-                  Following
-                </Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={[styles.statNumber, { color: '#FF6B35' }]}>
-                  {formatNumber(userProfile.stats.Streaks)}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.text }]}>
-                  Streaks
-                </Text>
-              </View>
+          </View>
+          {/* Stats row here */}
+          <View style={styles.statsRow}>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: '#FFF' }]}>
+                {formatNumber(userProfile.stats.posts)}
+              </Text>
+              <Text style={[styles.statLabel, { color: neskaColor }]}>
+                Posts
+              </Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: '#FFF' }]}>
+                {formatNumber(userProfile.stats.following)}
+              </Text>
+              <Text style={[styles.statLabel, { color: neskaColor }]}>
+                Following
+              </Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: '#FFF' }]}>
+                {formatNumber(userProfile.stats.followers)}
+              </Text>
+              <Text style={[styles.statLabel, { color: neskaColor }]}>
+                Followers
+              </Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: '#FFF' }]}>
+                {formatNumber(userProfile.stats.Streaks)}
+              </Text>
+              <Text style={[styles.statLabel, { color: neskaColor }]}>
+                Streaks
+              </Text>
             </View>
           </View>
-
           {/* Name and Bio */}
           <View style={styles.userInfoSection}>
             <View style={styles.nameRow}>
@@ -333,7 +331,6 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
               {userProfile.bio}
             </Text>
           </View>
-
           {/* Action Buttons */}
           <View style={styles.actionButtons}>
             <TouchableOpacity
@@ -372,6 +369,17 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
                 size={24}
                 color={activeTab === tab.id ? colors.text : colors.secondary}
               />
+              <Text
+                style={{
+                  fontSize: 12,
+                  color: activeTab === tab.id ? colors.text : colors.secondary,
+                  marginTop: 1,
+                  fontFamily: FontFamily.semiBold,
+                  marginBottom: 4,
+                }}
+              >
+                {tab.label}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -385,7 +393,7 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
               numColumns={3}
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.postsGrid}
+              contentContainerStyle={[styles.postsGrid, { marginBottom: 60 }]}
               ItemSeparatorComponent={() => <View style={{ height: 2 }} />}
               columnWrapperStyle={styles.postRow}
             />
@@ -398,7 +406,7 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
               numColumns={3}
               scrollEnabled={false}
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.postsGrid}
+              contentContainerStyle={[styles.postsGrid, { marginBottom: 60 }]}
               ItemSeparatorComponent={() => <View style={{ height: 2 }} />}
               columnWrapperStyle={styles.postRow}
             />
@@ -421,6 +429,18 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
+  stickyHeaderBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 56, // header height
+    zIndex: 1001,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.md,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -434,7 +454,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: FontSize.lg,
     fontFamily: FontFamily.semiBold,
-    fontWeight: '600',
+    fontWeight: '400',
   },
   shareButton: {
     padding: Spacing.xs,
@@ -444,13 +464,13 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   topRow: {
-    flexDirection: 'row',
     alignItems: 'center',
     marginBottom: Spacing.md,
   },
   avatarContainer: {
     position: 'relative',
-    marginRight: Spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatar: {
     width: 80,
@@ -471,20 +491,23 @@ const styles = StyleSheet.create({
     borderColor: '#FFF',
   },
   statsRow: {
-    flex: 1,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
+    paddingHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
   },
   statItem: {
     alignItems: 'center',
+    flex: 1,
   },
   statNumber: {
     fontSize: 16,
     fontFamily: FontFamily.semiBold,
-    fontWeight: '600',
+    fontWeight: '400',
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: FontFamily.regular,
     marginTop: 2,
   },
@@ -499,7 +522,7 @@ const styles = StyleSheet.create({
   displayName: {
     fontSize: 14,
     fontFamily: FontFamily.semiBold,
-    fontWeight: '600',
+    fontWeight: '400',
     marginRight: 6,
   },
   verifiedBadge: {
@@ -535,7 +558,7 @@ const styles = StyleSheet.create({
   editProfileButtonText: {
     fontSize: 14,
     fontFamily: FontFamily.semiBold,
-    fontWeight: '600',
+    fontWeight: '400',
   },
   iconButton: {
     paddingHorizontal: 12,
@@ -551,13 +574,13 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    paddingVertical: Spacing.md,
+    paddingVertical: 2,
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: 'transparent',
   },
   activeTab: {
-    borderBottomColor: '#000',
+    borderBottomColor: '#FFF',
   },
   contentContainer: {
     flex: 1,
