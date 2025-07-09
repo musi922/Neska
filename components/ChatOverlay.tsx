@@ -12,13 +12,13 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import { 
-  Search, 
-  Camera, 
-  X, 
-  Send, 
-  Zap, 
-  Crown, 
+import {
+  Search,
+  Camera,
+  X,
+  Send,
+  Zap,
+  Crown,
   Gift,
   Star,
   Flame,
@@ -26,7 +26,7 @@ import {
   Users,
   Clock,
   CheckCheck,
-  Plus // Added for new message icon
+  Plus, // Added for new message icon
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
@@ -34,73 +34,78 @@ import { BlurView } from 'expo-blur';
 
 const { width, height } = Dimensions.get('window');
 
-// Mock data with Neska-specific features
+// Mock data with GEN Z-specific features
 const mockChats = [
   {
     id: '1',
     name: 'Ornella',
-    avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+    avatar:
+      'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
     time: 'just now',
-    flames: 3,
+    Streaks: 3,
     isElite: false,
     messageType: 'delivered',
     hasStory: true,
-    isActive: true
+    isActive: true,
   },
   {
     id: '2',
     name: 'Tetaa',
-    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+    avatar:
+      'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     time: '5m',
-    flames: 12,
+    Streaks: 12,
     isElite: true,
     messageType: 'reply',
     hasStory: false,
-    isActive: true
+    isActive: true,
   },
   {
     id: '3',
     name: 'Shareen',
-    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    avatar:
+      'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
     time: '2h',
-    flames: 8,
+    Streaks: 8,
     isElite: false,
     messageType: 'reply',
     hasStory: true,
-    isActive: false
+    isActive: false,
   },
   {
     id: '4',
     name: 'Edwine',
     avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
     time: '1d',
-    flames: 33,
+    Streaks: 33,
     isElite: true,
     messageType: 'reply',
     hasStory: false,
-    isActive: true
+    isActive: true,
   },
   {
     id: '5',
     name: 'Kerry Rose',
-    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+    avatar:
+      'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     time: '3h',
-    flames: 0,
+    Streaks: 0,
     isElite: false,
     messageType: 'system',
     hasStory: false,
-    isActive: false
+    isActive: false,
   },
   {
     id: '6',
     name: 'Joan',
-    avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+    avatar:
+      'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
     time: 'just now',
-    flames: 200,
+    Streaks: 200,
     isElite: false,
     messageType: 'seen',
     hasStory: true,
-    isActive: true
+    isActive: true,
   },
 ];
 
@@ -115,33 +120,35 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
-  // Neska brand color
+  // GEN Z brand color
   const neskaColor = '#00B4D8';
 
   const tabs = [
     { id: 'All', label: 'All', icon: MessageSquare, count: null },
     { id: 'Unread', label: 'Unread', icon: null, count: 4 },
-    { id: 'Flames', label: 'Flames', icon: Flame, count: null },
+    { id: 'Streaks', label: 'Streaks', icon: Flame, count: null },
     { id: 'Elite', label: 'Elite', icon: Crown, count: null },
     { id: 'Groups', label: 'Groups', icon: Users, count: null },
   ];
 
   const getFilteredChats = () => {
     let filtered = mockChats;
-    
+
     if (searchQuery) {
-      filtered = filtered.filter(chat => 
+      filtered = filtered.filter((chat) =>
         chat.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     switch (activeTab) {
       case 'Unread':
-        return filtered.filter(chat => chat.messageType !== 'delivered');
-      case 'Flames':
-        return filtered.filter(chat => chat.flames > 0).sort((a, b) => b.flames - a.flames);
+        return filtered.filter((chat) => chat.messageType !== 'delivered');
+      case 'Streaks':
+        return filtered
+          .filter((chat) => chat.Streaks > 0)
+          .sort((a, b) => b.Streaks - a.Streaks);
       case 'Elite':
-        return filtered.filter(chat => chat.isElite);
+        return filtered.filter((chat) => chat.isElite);
       case 'Groups':
         return []; // Would contain group chats
       default:
@@ -152,7 +159,7 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
   const getFlameColor = (count: number) => {
     if (count >= 30) return '#FF6B35'; // Super flame
     if (count >= 10) return '#FF8C42'; // High flame
-    if (count >= 5) return '#FFB347';  // Medium flame
+    if (count >= 5) return '#FFB347'; // Medium flame
     return '#FFA500'; // Regular flame
   };
 
@@ -164,7 +171,9 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
     <TouchableOpacity key={chat.id} style={styles.chatItem}>
       <View style={styles.avatarContainer}>
         <Image source={{ uri: chat.avatar }} style={styles.avatar} />
-        {chat.hasStory && <View style={[styles.storyRing, { borderColor: neskaColor }]} />}
+        {chat.hasStory && (
+          <View style={[styles.storyRing, { borderColor: neskaColor }]} />
+        )}
         {chat.isActive && <View style={styles.activeIndicator} />}
         {chat.isElite && (
           <View style={styles.eliteBadge}>
@@ -175,7 +184,10 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
 
       <View style={styles.chatContent}>
         <View style={styles.chatHeader}>
-          <Text style={[styles.chatName, { color: colors.text }]} numberOfLines={1}>
+          <Text
+            style={[styles.chatName, { color: colors.text }]}
+            numberOfLines={1}
+          >
             {chat.name}
           </Text>
         </View>
@@ -184,23 +196,41 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
           <View style={styles.messageContent}>
             {chat.messageType === 'delivered' && (
               <View style={styles.deliveredIndicator}>
-                <Send size={10} color={neskaColor}/>
-                <Text style={[styles.replyText, { color: neskaColor }]}>Dropped</Text>
+                <Send size={10} color={neskaColor} />
+                <Text style={[styles.replyText, { color: neskaColor }]}>
+                  Dropped
+                </Text>
               </View>
             )}
             {chat.messageType === 'seen' && (
-                <View style={styles.seenIndicator}>
-                  <CheckCheck  size={10} color={neskaColor} style={styles.checkIcon} />
-                  <Text style={[styles.replyText, { color: neskaColor }]}>Seen</Text>
-                </View>
+              <View style={styles.seenIndicator}>
+                <CheckCheck
+                  size={10}
+                  color={neskaColor}
+                  style={styles.checkIcon}
+                />
+                <Text style={[styles.replyText, { color: neskaColor }]}>
+                  Seen
+                </Text>
+              </View>
             )}
             {chat.messageType === 'reply' && (
-              <View style={[styles.replyIndicator, { backgroundColor: `${neskaColor}15` }]}>
-                <Text style={[styles.replyText, { color: neskaColor }]}>double-tap to reply</Text>
+              <View
+                style={[
+                  styles.replyIndicator,
+                  { backgroundColor: `${neskaColor}15` },
+                ]}
+              >
+                <Text style={[styles.replyText, { color: neskaColor }]}>
+                  double-tap to reply
+                </Text>
               </View>
             )}
             {chat.messageType === 'system' && (
-              <Text style={[styles.systemMessage, { color: neskaColor }]} numberOfLines={1}>
+              <Text
+                style={[styles.systemMessage, { color: neskaColor }]}
+                numberOfLines={1}
+              >
                 You are now friends 🎉
               </Text>
             )}
@@ -211,11 +241,16 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
       {/* Right side container with flame/time and camera aligned */}
       <View style={styles.rightContainer}>
         <View style={styles.chatMeta}>
-          {chat.flames > 0 && (
+          {chat.Streaks > 0 && (
             <View style={styles.flameContainer}>
-              <Flame size={12} color={getFlameColor(chat.flames)} />
-              <Text style={[styles.flameCount, { color: getFlameColor(chat.flames) }]}>
-                {chat.flames}
+              <Flame size={12} color={getFlameColor(chat.Streaks)} />
+              <Text
+                style={[
+                  styles.flameCount,
+                  { color: getFlameColor(chat.Streaks) },
+                ]}
+              >
+                {chat.Streaks}
               </Text>
             </View>
           )}
@@ -223,7 +258,7 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
             {chat.time}
           </Text>
         </View>
-        
+
         <TouchableOpacity style={styles.cameraButton}>
           <Camera size={20} color={neskaColor} />
         </TouchableOpacity>
@@ -232,12 +267,12 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
   );
 
   return isVisible ? (
-    <View 
+    <View
       style={[
         styles.overlay,
         {
           backgroundColor: colors.background,
-        }
+        },
       ]}
     >
       {Platform.OS === 'ios' && (
@@ -254,11 +289,11 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <X size={24} color={colors.text} />
           </TouchableOpacity>
-          
+
           <Text style={[styles.headerTitle, { color: colors.text }]}>Chat</Text>
-          
-          <TouchableOpacity 
-            onPress={handleNewMessage} 
+
+          <TouchableOpacity
+            onPress={handleNewMessage}
             style={styles.newMessageButton}
           >
             <Plus size={24} color={colors.text} />
@@ -268,13 +303,20 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
         {/* Search Container - Always visible now */}
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
-            <Search size={16} color={colors.secondary} style={styles.searchIcon} />
+            <Search
+              size={16}
+              color={colors.secondary}
+              style={styles.searchIcon}
+            />
             <TextInput
-              style={[styles.searchInput, { 
-                backgroundColor: colors.card, 
-                color: colors.text,
-                borderColor: colors.border 
-              }]}
+              style={[
+                styles.searchInput,
+                {
+                  backgroundColor: colors.card,
+                  color: colors.text,
+                  borderColor: colors.border,
+                },
+              ]}
               placeholder="Search chats..."
               placeholderTextColor={colors.secondary}
               value={searchQuery}
@@ -284,8 +326,8 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
         </View>
 
         {/* Tabs */}
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.tabsContainer}
           contentContainerStyle={styles.tabsContent}
@@ -296,18 +338,26 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
               style={[
                 styles.tab,
                 activeTab === tab.id && styles.activeTab,
-                { borderBottomColor: activeTab === tab.id ? '#FFFFFF' : 'transparent' }
+                {
+                  borderBottomColor:
+                    activeTab === tab.id ? '#FFFFFF' : 'transparent',
+                },
               ]}
               onPress={() => setActiveTab(tab.id)}
             >
               <View style={styles.tabContent}>
-                {tab.icon && <tab.icon size={16} color={
-                  activeTab === tab.id ? '#FFFFFF' : '#00B4D8'
-                } />}
-                <Text style={[
-                  styles.tabText,
-                  { color: activeTab === tab.id ? '#FFFFFF' : '#00B4D8' }
-                ]}>
+                {tab.icon && (
+                  <tab.icon
+                    size={16}
+                    color={activeTab === tab.id ? '#FFFFFF' : '#00B4D8'}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.tabText,
+                    { color: activeTab === tab.id ? '#FFFFFF' : '#00B4D8' },
+                  ]}
+                >
                   {tab.label}
                 </Text>
                 {tab.count && (
@@ -322,17 +372,16 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
       </View>
 
       {/* Chat List */}
-      <ScrollView 
-        style={styles.chatList}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={styles.chatList} showsVerticalScrollIndicator={false}>
         {getFilteredChats().map(renderChatItem)}
-        
+
         {getFilteredChats().length === 0 && (
           <View style={styles.emptyState}>
             <MessageSquare size={48} color={colors.secondary} />
             <Text style={[styles.emptyText, { color: colors.secondary }]}>
-              {searchQuery ? 'No chats found' : `No ${activeTab.toLowerCase()} chats`}
+              {searchQuery
+                ? 'No chats found'
+                : `No ${activeTab.toLowerCase()} chats`}
             </Text>
           </View>
         )}
@@ -596,8 +645,8 @@ const styles = StyleSheet.create({
     marginRight: Spacing.xs,
   },
   checkIcon: {
-    marginRight: 1
-  }
+    marginRight: 1,
+  },
 });
 
 export default ChatOverlay;

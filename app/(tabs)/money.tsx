@@ -121,7 +121,7 @@ export default function MoneyScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.balanceFooter}>
-          <Text style={styles.balanceSubtext}>Neska Coins</Text>
+          <Text style={styles.balanceSubtext}>GEN Z Coins</Text>
           <TouchableOpacity>
             <Text style={styles.rewardText}>🎁 Daily Reward Available</Text>
           </TouchableOpacity>

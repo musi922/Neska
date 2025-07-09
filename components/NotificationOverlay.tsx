@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import { 
+import {
   X,
   Heart,
   MessageCircle,
@@ -27,7 +27,7 @@ import {
   Eye,
   ThumbsUp,
   Share2,
-  AtSign
+  AtSign,
 } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
@@ -35,86 +35,94 @@ import { BlurView } from 'expo-blur';
 
 const { width, height } = Dimensions.get('window');
 
-// Mock notification data with Neska-specific features
+// Mock notification data with GEN Z-specific features
 const mockNotifications = [
   {
     id: '1',
     type: 'like',
     user: {
       name: 'Ornella',
-      avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+      avatar:
+        'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
       isElite: false,
-      hasStory: true
+      hasStory: true,
     },
     content: {
       type: 'post',
-      thumbnail: 'https://images.pexels.com/photos/3889856/pexels-photo-3889856.jpeg'
+      thumbnail:
+        'https://images.pexels.com/photos/3889856/pexels-photo-3889856.jpeg',
     },
     time: '2m',
     isRead: false,
-    flames: 5
+    Streaks: 5,
   },
   {
     id: '2',
     type: 'comment',
     user: {
       name: 'Tetaa',
-      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+      avatar:
+        'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
       isElite: true,
-      hasStory: false
+      hasStory: false,
     },
     content: {
       type: 'post',
-      thumbnail: 'https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg',
-      comment: 'Amazing shot! 🔥'
+      thumbnail:
+        'https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg',
+      comment: 'Amazing shot! 🔥',
     },
     time: '5m',
     isRead: false,
-    flames: 12
+    Streaks: 12,
   },
   {
     id: '3',
     type: 'follow',
     user: {
       name: 'Shareen',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+      avatar:
+        'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
       isElite: false,
-      hasStory: true
+      hasStory: true,
     },
     time: '1h',
     isRead: true,
-    flames: 0
+    Streaks: 0,
   },
   {
     id: '4',
     type: 'flame',
     user: {
       name: 'Edwine',
-      avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
+      avatar:
+        'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
       isElite: true,
-      hasStory: false
+      hasStory: false,
     },
     content: {
       type: 'live',
-      thumbnail: 'https://images.pexels.com/photos/2263936/pexels-photo-2263936.jpeg'
+      thumbnail:
+        'https://images.pexels.com/photos/2263936/pexels-photo-2263936.jpeg',
     },
     time: '2h',
     isRead: true,
-    flames: 25,
-    flameCount: 25
+    Streaks: 25,
+    flameCount: 25,
   },
   {
     id: '5',
     type: 'live_join',
     user: {
       name: 'Kerry Rose',
-      avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+      avatar:
+        'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
       isElite: false,
-      hasStory: false
+      hasStory: false,
     },
     time: '3h',
     isRead: false,
-    flames: 0
+    Streaks: 0,
   },
   {
     id: '6',
@@ -122,44 +130,48 @@ const mockNotifications = [
     users: [
       {
         name: 'Joan',
-        avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
-        isElite: false
+        avatar:
+          'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+        isElite: false,
       },
       {
         name: 'Mike',
-        avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
-        isElite: true
-      }
+        avatar:
+          'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+        isElite: true,
+      },
     ],
     content: {
       type: 'post',
-      thumbnail: 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg'
+      thumbnail:
+        'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg',
     },
     time: '4h',
     isRead: true,
     totalLikes: 8,
-    flames: 0
+    Streaks: 0,
   },
   {
     id: '7',
     type: 'elite_upgrade',
     time: '1d',
     isRead: false,
-    flames: 0
+    Streaks: 0,
   },
   {
     id: '8',
     type: 'story_view',
     user: {
       name: 'Artist Paul',
-      avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg',
+      avatar:
+        'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg',
       isElite: false,
-      hasStory: true
+      hasStory: true,
     },
     time: '1d',
     isRead: true,
-    flames: 3
-  }
+    Streaks: 3,
+  },
 ];
 
 interface NotificationOverlayProps {
@@ -167,7 +179,10 @@ interface NotificationOverlayProps {
   onClose: () => void;
 }
 
-const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, onClose }) => {
+const NotificationOverlay: React.FC<NotificationOverlayProps> = ({
+  isVisible,
+  onClose,
+}) => {
   const [activeTab, setActiveTab] = useState('All');
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -175,26 +190,36 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
   const neskaColor = '#00B4D8';
 
   const tabs = [
-    { id: 'All', label: 'All', count: mockNotifications.filter(n => !n.isRead).length },
+    {
+      id: 'All',
+      label: 'All',
+      count: mockNotifications.filter((n) => !n.isRead).length,
+    },
     { id: 'Likes', label: 'Likes', count: null },
     { id: 'Comments', label: 'Comments', count: null },
     { id: 'Follows', label: 'Follows', count: null },
-    { id: 'Flames', label: 'Flames', count: null },
+    { id: 'Streaks', label: 'Streaks', count: null },
     { id: 'Live', label: 'Live', count: null },
   ];
 
   const getFilteredNotifications = () => {
     switch (activeTab) {
       case 'Likes':
-        return mockNotifications.filter(n => n.type === 'like' || n.type === 'multiple_likes');
+        return mockNotifications.filter(
+          (n) => n.type === 'like' || n.type === 'multiple_likes'
+        );
       case 'Comments':
-        return mockNotifications.filter(n => n.type === 'comment');
+        return mockNotifications.filter((n) => n.type === 'comment');
       case 'Follows':
-        return mockNotifications.filter(n => n.type === 'follow');
-      case 'Flames':
-        return mockNotifications.filter(n => n.type === 'flame' || n.flames > 0);
+        return mockNotifications.filter((n) => n.type === 'follow');
+      case 'Streaks':
+        return mockNotifications.filter(
+          (n) => n.type === 'flame' || n.Streaks > 0
+        );
       case 'Live':
-        return mockNotifications.filter(n => n.type === 'live_join' || n.content?.type === 'live');
+        return mockNotifications.filter(
+          (n) => n.type === 'live_join' || n.content?.type === 'live'
+        );
       default:
         return mockNotifications;
     }
@@ -232,7 +257,7 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
       case 'follow':
         return `started following you`;
       case 'flame':
-        return `and You have reached ${notification.flameCount} flames`;
+        return `and You have reached ${notification.flameCount} Streaks`;
       case 'live_join':
         return `joined your live stream`;
       case 'multiple_likes':
@@ -254,11 +279,11 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
   };
 
   const renderNotificationItem = (notification: any) => (
-    <TouchableOpacity 
-      key={notification.id} 
+    <TouchableOpacity
+      key={notification.id}
       style={[
         styles.notificationItem,
-        !notification.isRead && { backgroundColor: `${neskaColor}08` }
+        !notification.isRead && { backgroundColor: `${neskaColor}08` },
       ]}
     >
       <View style={styles.notificationContent}>
@@ -266,13 +291,17 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
         <View style={styles.avatarContainer}>
           {notification.type === 'multiple_likes' ? (
             <View style={styles.multipleAvatars}>
-              <Image 
-                source={{ uri: notification.users[0].avatar }} 
-                style={[styles.avatar, styles.overlappingAvatar]} 
+              <Image
+                source={{ uri: notification.users[0].avatar }}
+                style={[styles.avatar, styles.overlappingAvatar]}
               />
-              <Image 
-                source={{ uri: notification.users[1].avatar }} 
-                style={[styles.avatar, styles.overlappingAvatar, { marginLeft: -15 }]} 
+              <Image
+                source={{ uri: notification.users[1].avatar }}
+                style={[
+                  styles.avatar,
+                  styles.overlappingAvatar,
+                  { marginLeft: -15 },
+                ]}
               />
             </View>
           ) : notification.type === 'elite_upgrade' ? (
@@ -281,7 +310,10 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
             </View>
           ) : (
             <>
-              <Image source={{ uri: notification.user.avatar }} style={styles.avatar} />
+              <Image
+                source={{ uri: notification.user.avatar }}
+                style={styles.avatar}
+              />
               {notification.user?.hasStory && (
                 <View style={[styles.storyRing, { borderColor: neskaColor }]} />
               )}
@@ -300,36 +332,44 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
             <View style={styles.iconContainer}>
               {getNotificationIcon(notification.type)}
             </View>
-            
-            <Text style={[styles.notificationText, { color: colors.text }]} numberOfLines={2}>
+
+            <Text
+              style={[styles.notificationText, { color: colors.text }]}
+              numberOfLines={2}
+            >
               {notification.type === 'multiple_likes' ? (
                 <>
-                  <Text style={styles.boldText}>{notification.users[0].name}</Text>
-                  {' '}
+                  <Text style={styles.boldText}>
+                    {notification.users[0].name}
+                  </Text>{' '}
                   {getNotificationText(notification)}
                 </>
               ) : notification.type === 'elite_upgrade' ? (
                 getNotificationText(notification)
               ) : (
                 <>
-                  <Text style={styles.boldText}>{notification.user.name}</Text>
-                  {' '}
+                  <Text style={styles.boldText}>{notification.user.name}</Text>{' '}
                   {getNotificationText(notification)}
                 </>
               )}
             </Text>
           </View>
 
-          {/* Time and Flames */}
+          {/* Time and Streaks */}
           <View style={styles.metaContainer}>
             <Text style={[styles.timeText, { color: colors.secondary }]}>
               {notification.time}
             </Text>
-            {notification.flames > 0 && (
+            {notification.Streaks > 0 && (
               <View style={styles.flameContainer}>
-                <Flame size={12} color={getFlameColor(notification.flames)} />
-                <Text style={[styles.flameText, { color: getFlameColor(notification.flames) }]}>
-                  {notification.flames}
+                <Flame size={12} color={getFlameColor(notification.Streaks)} />
+                <Text
+                  style={[
+                    styles.flameText,
+                    { color: getFlameColor(notification.Streaks) },
+                  ]}
+                >
+                  {notification.Streaks}
                 </Text>
               </View>
             )}
@@ -338,9 +378,9 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
 
         {/* Content Thumbnail */}
         {notification.content?.thumbnail && (
-          <Image 
-            source={{ uri: notification.content.thumbnail }} 
-            style={styles.contentThumbnail} 
+          <Image
+            source={{ uri: notification.content.thumbnail }}
+            style={styles.contentThumbnail}
           />
         )}
 
@@ -353,12 +393,7 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
   );
 
   return isVisible ? (
-    <View 
-      style={[
-        styles.overlay,
-        { backgroundColor: colors.background }
-      ]}
-    >
+    <View style={[styles.overlay, { backgroundColor: colors.background }]}>
       {Platform.OS === 'ios' && (
         <BlurView
           tint={colorScheme === 'dark' ? 'dark' : 'light'}
@@ -373,17 +408,21 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <X size={24} color={colors.text} />
           </TouchableOpacity>
-          
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Notifications</Text>
-          
+
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
+            Notifications
+          </Text>
+
           <TouchableOpacity style={styles.markAllButton}>
-            <Text style={[styles.markAllText, { color: neskaColor }]}>Mark all</Text>
+            <Text style={[styles.markAllText, { color: neskaColor }]}>
+              Mark all
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Tabs */}
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.tabsContainer}
           contentContainerStyle={styles.tabsContent}
@@ -394,15 +433,20 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
               style={[
                 styles.tab,
                 activeTab === tab.id && styles.activeTab,
-                { borderBottomColor: activeTab === tab.id ? '#FFFFFF' : 'transparent' }
+                {
+                  borderBottomColor:
+                    activeTab === tab.id ? '#FFFFFF' : 'transparent',
+                },
               ]}
               onPress={() => setActiveTab(tab.id)}
             >
               <View style={styles.tabContent}>
-                <Text style={[
-                  styles.tabText,
-                  { color: activeTab === tab.id ? '#FFFFFF' : neskaColor }
-                ]}>
+                <Text
+                  style={[
+                    styles.tabText,
+                    { color: activeTab === tab.id ? '#FFFFFF' : neskaColor },
+                  ]}
+                >
                   {tab.label}
                 </Text>
                 {tab.count && tab.count > 0 && (
@@ -417,12 +461,12 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({ isVisible, on
       </View>
 
       {/* Notifications List */}
-      <ScrollView 
+      <ScrollView
         style={styles.notificationsList}
         showsVerticalScrollIndicator={false}
       >
         {getFilteredNotifications().map(renderNotificationItem)}
-        
+
         {getFilteredNotifications().length === 0 && (
           <View style={styles.emptyState}>
             <Bell size={48} color={colors.secondary} />
