@@ -9,6 +9,7 @@ import ContentCard from '@/components/ContentCard';
 import LivestreamPreview from '@/components/LivestreamPreview';
 import CategoryChip from '@/components/CategoryChip';
 import ProfileSummary from '@/components/ProfileSummary';
+import StoryOverlay from '@/components/StoryOverlay';
 
 // Mock data
 const categories = ['For You', 'Live', 'Following', 'Room'];
@@ -159,6 +160,46 @@ export default function HomeScreen() {
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
 
+  // Story overlay state
+  const [showStory, setShowStory] = useState(false);
+  const [storyUser, setStoryUser] = useState<any>(null);
+  // For demo, use the same mockStories from StoryOverlay
+  const mockStories = [
+    {
+      id: '1',
+      type: 'image',
+      url: 'https://images.pexels.com/photos/3889856/pexels-photo-3889856.jpeg',
+      user: {
+        name: 'Ornella',
+        avatar:
+          'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+      },
+      time: '2m ago',
+    },
+    {
+      id: '2',
+      type: 'video',
+      url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+      user: {
+        name: 'Ornella',
+        avatar:
+          'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+      },
+      time: '2m ago',
+    },
+    {
+      id: '3',
+      type: 'image',
+      url: 'https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg',
+      user: {
+        name: 'Ornella',
+        avatar:
+          'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+      },
+      time: '2m ago',
+    },
+  ];
+
   // Filtered data for Following
   const followingFeed = feedContent.filter((item) => item.following);
   const followingCreators = creators.filter((c) => c.following);
@@ -170,6 +211,13 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <HeaderBar />
+      {/* Story Overlay */}
+      <StoryOverlay
+        isVisible={showStory}
+        onClose={() => setShowStory(false)}
+        stories={mockStories}
+        initialIndex={0}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
@@ -212,6 +260,10 @@ export default function HomeScreen() {
                   avatar={creator.avatar}
                   username={creator.username}
                   isLive={creator.isLive}
+                  onPress={() => {
+                    setShowStory(true);
+                    setStoryUser(creator);
+                  }}
                 />
               ))}
             </ScrollView>
