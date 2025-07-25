@@ -4,16 +4,22 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  TextInput,
   TouchableOpacity,
   Image,
   Dimensions,
-  Platform,
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import { ArrowLeft, Phone, Video, MoveVertical as MoreVertical, Send, Mic, Camera, Image as ImageIcon, Smile, Play, Pause, Check, CheckCheck, Clock } from 'lucide-react-native';
+import { 
+  ArrowLeft, 
+  Phone, 
+  Video, 
+  MoreVertical, 
+  Check, 
+  CheckCheck, 
+  Clock 
+} from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 import { useWebSocket, ChatMessage, User } from '@/hooks/useWebSocket';
@@ -33,10 +39,8 @@ interface ChatScreenProps {
 
 const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
-  const [showVoiceRecording, setShowVoiceRecording] = useState(false);
   
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -67,6 +71,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
     remoteStream
   } = useVideoCall(socket);
 
+  // WebSocket message handling
   useEffect(() => {
     if (socket) {
       socket.onmessage = (event) => {
@@ -75,6 +80,8 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
         switch (data.type) {
           case 'message':
             setMessages(prev => [...prev, data.data]);
+            // Auto-scroll to bottom when new message arrives
+            setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
             break;
           case 'typing':
             if (data.data.senderId === user.id) {
@@ -95,81 +102,28 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
     }
   }, [socket, user.id]);
 
-  const handleSendMessage = () => {
-    if (inputText.trim() && isConnected) {
+  // Cleanup typing timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Handle sending text messages from ChatInput
+  const handleSendMessage = (content: string, type: 'text' | 'voice' | 'image' = 'text') => {
+    if (content.trim() && isConnected) {
       sendMessage({
         senderId: currentUserId,
         receiverId: user.id,
-        content: inputText.trim(),
-        type: 'text'
-      });
-      setInputText('');
-    }
-  };
-
-  const handleInputChange = (text: string) => {
-    setInputText(text);
-    
-    if (!isTyping && text.length > 0) {
-      setIsTyping(true);
-      sendTyping(user.id, true);
-    }
-    
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    
-    typingTimeoutRef.current = setTimeout(() => {
-      setIsTyping(false);
-      sendTyping(user.id, false);
-    }, 1000);
-  };
-
-  const handleVoiceRecording = async () => {
-    if (isRecording) {
-      const uri = await stopRecording();
-      if (uri) {
-        sendMessage({
-          senderId: currentUserId,
-          receiverId: user.id,
-          content: uri,
-          type: 'voice',
-          voiceDuration: recordingDuration,
-          voiceUrl: uri
-        });
-      }
-      setShowVoiceRecording(false);
-    } else {
-      const hasPermission = await requestPermissions();
-      if (hasPermission) {
-        setShowVoiceRecording(true);
-        await startRecording();
-      } else {
-        Alert.alert('Permission Required', 'Please grant microphone permission to record voice messages.');
-      }
-    }
-  };
-
-  const handleVideoCall = () => {
-    startCall(user.id);
-  };
-
-  const handleVoiceCall = () => {
-    // Implement voice call logic
-    console.log('Starting voice call with', user.username);
-  };
-
-  const handleSendMessage = (content: string, type: 'text' | 'voice' | 'image') => {
-    if (isConnected) {
-      sendMessage({
-        senderId: currentUserId,
-        receiverId: user.id,
-        content,
+        content: content.trim(),
         type
       });
     }
   };
 
+  // Handle sending voice messages
   const handleSendVoice = (uri: string, duration: number) => {
     if (isConnected) {
       sendMessage({
@@ -183,11 +137,26 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
     }
   };
 
+  // Handle voice call
+  const handleVoiceCall = () => {
+    // Implement voice call logic
+    console.log('Starting voice call with', user.username);
+    // You can implement voice-only call here
+    startCall(user.id);
+  };
+
+  // Handle video call
+  const handleVideoCall = () => {
+    startCall(user.id);
+  };
+
+  // Format message timestamp
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Get message status icon
   const getMessageStatusIcon = (status: ChatMessage['status']) => {
     switch (status) {
       case 'sending':
@@ -203,6 +172,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
     }
   };
 
+  // Render individual message
   const renderMessage = ({ item }: { item: ChatMessage }) => {
     const isOwnMessage = item.senderId === currentUserId;
     
@@ -253,12 +223,13 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
     );
   };
 
+  // Render typing indicator
   const renderTypingIndicator = () => {
     if (!userTyping) return null;
     
     return (
       <View style={[styles.messageContainer, styles.otherMessage]}>
-        <View style={[styles.messageBubble, { backgroundColor: colors.card }]}>
+        <View style={[styles.messageBubble, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={styles.typingIndicator}>
             <View style={[styles.typingDot, { backgroundColor: colors.tabIconDefault }]} />
             <View style={[styles.typingDot, { backgroundColor: colors.tabIconDefault }]} />
@@ -319,7 +290,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
         keyExtractor={(item) => item.id}
         style={styles.messagesList}
         contentContainerStyle={styles.messagesContent}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
         ListFooterComponent={renderTypingIndicator}
       />
 
