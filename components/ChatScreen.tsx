@@ -36,6 +36,9 @@ import { useVoiceRecording } from '@/hooks/useVoiceRecording';
 import { useVideoCall } from '@/hooks/useVideoCall';
 import VoiceMessagePlayer from './VoiceMessagePlayer';
 import VideoCallModal from './VideoCallModal';
+import ChatInput from './ChatInput';
+import MessageBubble from './MessageBubble';
+import ImageViewer from './ImageViewer';
 
 const { width } = Dimensions.get('window');
 
@@ -51,6 +54,7 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
   const [isTyping, setIsTyping] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
   const [showVoiceRecording, setShowVoiceRecording] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -173,6 +177,39 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
     console.log('Starting voice call with', user.username);
   };
 
+  const handleSendMessage = (content: string, type: 'text' | 'voice' | 'image') => {
+    if (isConnected) {
+      sendMessage({
+        senderId: currentUserId,
+        receiverId: user.id,
+        content,
+        type
+      });
+    }
+  };
+
+  const handleSendVoice = (uri: string, duration: number) => {
+    if (isConnected) {
+      sendMessage({
+        senderId: currentUserId,
+        receiverId: user.id,
+        content: uri,
+        type: 'voice',
+        voiceDuration: duration,
+        voiceUrl: uri
+      });
+    }
+  };
+
+  const handleImagePress = (uri: string) => {
+    setSelectedImage(uri);
+  };
+
+  const handleVideoPress = (uri: string) => {
+    // Implement video player
+    console.log('Play video:', uri);
+  };
+
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -194,52 +231,13 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
   };
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {
-    const isOwnMessage = item.senderId === currentUserId;
-    
     return (
-      <View style={[
-        styles.messageContainer,
-        isOwnMessage ? styles.ownMessage : styles.otherMessage
-      ]}>
-        <View style={[
-          styles.messageBubble,
-          {
-            backgroundColor: isOwnMessage ? '#00B4D8' : colors.card,
-            borderColor: colors.border
-          }
-        ]}>
-          {item.type === 'text' && (
-            <Text style={[
-              styles.messageText,
-              { color: isOwnMessage ? '#FFF' : colors.text }
-            ]}>
-              {item.content}
-            </Text>
-          )}
-          
-          {item.type === 'voice' && (
-            <VoiceMessagePlayer
-              uri={item.voiceUrl || item.content}
-              duration={item.voiceDuration || 0}
-              isOwnMessage={isOwnMessage}
-            />
-          )}
-          
-          <View style={styles.messageFooter}>
-            <Text style={[
-              styles.messageTime,
-              { color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.tabIconDefault }
-            ]}>
-              {formatTime(item.timestamp)}
-            </Text>
-            {isOwnMessage && (
-              <View style={styles.messageStatus}>
-                {getMessageStatusIcon(item.status)}
-              </View>
-            )}
-          </View>
-        </View>
-      </View>
+      <MessageBubble
+        message={item}
+        isOwnMessage={item.senderId === currentUserId}
+        onImagePress={handleImagePress}
+        onVideoPress={handleVideoPress}
+      />
     );
   };
 
@@ -314,68 +312,12 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
       />
 
       {/* Input Area */}
-      <View style={[
-        styles.inputContainer,
-        { 
-          backgroundColor: colors.card,
-          borderTopColor: colors.border,
-          paddingBottom: insets.bottom + 10
-        }
-      ]}>
-        {showVoiceRecording && (
-          <View style={styles.voiceRecordingOverlay}>
-            <View style={styles.voiceRecordingContent}>
-              <View style={styles.recordingIndicator}>
-                <View style={styles.recordingDot} />
-                <Text style={[styles.recordingText, { color: colors.text }]}>
-                  Recording... {recordingDuration}s
-                </Text>
-              </View>
-              <TouchableOpacity onPress={handleVoiceRecording} style={styles.stopRecordingButton}>
-                <Text style={styles.stopRecordingText}>Send</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-        
-        <View style={styles.inputRow}>
-          <View style={[
-            styles.textInputContainer,
-            { backgroundColor: colors.subtle, borderColor: colors.border }
-          ]}>
-            <TextInput
-              style={[styles.textInput, { color: colors.text }]}
-              placeholder="Type a message..."
-              placeholderTextColor={colors.tabIconDefault}
-              value={inputText}
-              onChangeText={handleInputChange}
-              multiline
-              maxLength={1000}
-            />
-            
-            <View style={styles.inputActions}>
-              <TouchableOpacity style={styles.inputAction}>
-                <Smile size={20} color={colors.tabIconDefault} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.inputAction}>
-                <Camera size={20} color={colors.tabIconDefault} />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.inputAction}>
-                <ImageIcon size={20} color={colors.tabIconDefault} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          
-          {inputText.trim() ? (
-            <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-              <Send size={20} color="#FFF" />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={handleVoiceRecording} style={styles.voiceButton}>
-              <Mic size={20} color="#FFF" />
-            </TouchableOpacity>
-          )}
-        </View>
+      <View style={{ paddingBottom: insets.bottom }}>
+        <ChatInput
+          onSendMessage={handleSendMessage}
+          onSendVoice={handleSendVoice}
+          placeholder="Type a message..."
+        />
       </View>
 
       {/* Video Call Modal */}
@@ -391,6 +333,15 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
           onToggleAudio={toggleAudio}
           callerName={user.username}
           callerAvatar={user.avatar}
+        />
+      )}
+
+      {/* Image Viewer */}
+      {selectedImage && (
+        <ImageViewer
+          isVisible={!!selectedImage}
+          imageUri={selectedImage}
+          onClose={() => setSelectedImage(null)}
         />
       )}
     </View>
@@ -491,102 +442,38 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginHorizontal: 2,
   },
-  inputContainer: {
-    borderTopWidth: 1,
-    padding: Spacing.md,
+  messageContainer: {
+    marginBottom: Spacing.sm,
   },
-  voiceRecordingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 180, 216, 0.1)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  voiceRecordingContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    padding: Spacing.md,
-    borderRadius: 25,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  recordingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: Spacing.md,
-  },
-  recordingDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#EF4444',
-    marginRight: Spacing.xs,
-  },
-  recordingText: {
-    fontSize: FontSize.md,
-    fontFamily: FontFamily.medium,
-  },
-  stopRecordingButton: {
-    backgroundColor: '#00B4D8',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-    borderRadius: 20,
-  },
-  stopRecordingText: {
-    color: '#FFF',
-    fontSize: FontSize.sm,
-    fontFamily: FontFamily.semiBold,
-  },
-  inputRow: {
-    flexDirection: 'row',
+  ownMessage: {
     alignItems: 'flex-end',
   },
-  textInputContainer: {
-    flex: 1,
-    borderRadius: 25,
-    borderWidth: 1,
-    marginRight: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
+  otherMessage: {
+    alignItems: 'flex-start',
   },
-  textInput: {
+  messageBubble: {
+    maxWidth: width * 0.75,
+    padding: Spacing.sm,
+    borderRadius: 18,
+    borderWidth: 1,
+  },
+  messageText: {
     fontSize: FontSize.md,
     fontFamily: FontFamily.regular,
-    maxHeight: 100,
-    minHeight: 40,
-    textAlignVertical: 'center',
+    lineHeight: 20,
   },
-  inputActions: {
+  messageFooter: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: Spacing.xs,
+    justifyContent: 'flex-end',
+    marginTop: 4,
   },
-  inputAction: {
-    marginLeft: Spacing.sm,
+  messageTime: {
+    fontSize: FontSize.xs,
+    fontFamily: FontFamily.regular,
   },
-  sendButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#00B4D8',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  voiceButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#00B4D8',
-    justifyContent: 'center',
-    alignItems: 'center',
+  messageStatus: {
+    marginLeft: 4,
   },
 });
 

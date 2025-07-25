@@ -7,14 +7,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/Theme';
 import HeaderBar from '@/components/HeaderBar';
+import CameraScreen from '@/components/CameraScreen';
 
 export default function PostScreen() {
   const [postType, setPostType] = useState<'content' | 'stream'>('content');
   const [postText, setPostText] = useState('');
+  const [showCamera, setShowCamera] = useState(false);
+  const [capturedMedia, setCapturedMedia] = useState<string | null>(null);
   
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
+
+  const handleCameraCapture = (uri: string) => {
+    setCapturedMedia(uri);
+    setShowCamera(false);
+  };
+
+  const handleCameraPress = () => {
+    setShowCamera(true);
+  };
   
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -100,7 +112,7 @@ export default function PostScreen() {
               <View style={[styles.divider, { backgroundColor: colors.border }]} />
               
               <View style={styles.mediaOptionsContainer}>
-                <TouchableOpacity style={styles.mediaOption}>
+                <TouchableOpacity style={styles.mediaOption} onPress={handleCameraPress}>
                   <Camera size={22} color={colors.tint} />
                   <Text style={[styles.mediaOptionText, { color: colors.text }]}>
                     Camera
@@ -261,6 +273,13 @@ export default function PostScreen() {
           </>
         )}
       </ScrollView>
+
+      {/* Camera Screen */}
+      <CameraScreen
+        isVisible={showCamera}
+        onClose={() => setShowCamera(false)}
+        onCapture={handleCameraCapture}
+      />
     </View>
   );
 }
