@@ -13,22 +13,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import {
-  ArrowLeft,
-  Phone,
-  Video,
-  MoreVertical,
-  Send,
-  Mic,
-  Camera,
-  Image as ImageIcon,
-  Smile,
-  Play,
-  Pause,
-  Check,
-  CheckCheck,
-  Clock
-} from 'lucide-react-native';
+import { ArrowLeft, Phone, Video, MoveVertical as MoreVertical, Send, Mic, Camera, Image as ImageIcon, Smile, Play, Pause, Check, CheckCheck, Clock } from 'lucide-react-native';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 import { useWebSocket, ChatMessage, User } from '@/hooks/useWebSocket';
@@ -37,8 +22,6 @@ import { useVideoCall } from '@/hooks/useVideoCall';
 import VoiceMessagePlayer from './VoiceMessagePlayer';
 import VideoCallModal from './VideoCallModal';
 import ChatInput from './ChatInput';
-import MessageBubble from './MessageBubble';
-import ImageViewer from './ImageViewer';
 
 const { width } = Dimensions.get('window');
 
@@ -54,7 +37,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
   const [isTyping, setIsTyping] = useState(false);
   const [userTyping, setUserTyping] = useState(false);
   const [showVoiceRecording, setShowVoiceRecording] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -201,15 +183,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
     }
   };
 
-  const handleImagePress = (uri: string) => {
-    setSelectedImage(uri);
-  };
-
-  const handleVideoPress = (uri: string) => {
-    // Implement video player
-    console.log('Play video:', uri);
-  };
-
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -231,13 +204,52 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
   };
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {
+    const isOwnMessage = item.senderId === currentUserId;
+    
     return (
-      <MessageBubble
-        message={item}
-        isOwnMessage={item.senderId === currentUserId}
-        onImagePress={handleImagePress}
-        onVideoPress={handleVideoPress}
-      />
+      <View style={[
+        styles.messageContainer,
+        isOwnMessage ? styles.ownMessage : styles.otherMessage
+      ]}>
+        <View style={[
+          styles.messageBubble,
+          {
+            backgroundColor: isOwnMessage ? '#00B4D8' : colors.card,
+            borderColor: colors.border
+          }
+        ]}>
+          {item.type === 'text' && (
+            <Text style={[
+              styles.messageText,
+              { color: isOwnMessage ? '#FFF' : colors.text }
+            ]}>
+              {item.content}
+            </Text>
+          )}
+          
+          {item.type === 'voice' && (
+            <VoiceMessagePlayer
+              uri={item.voiceUrl || item.content}
+              duration={item.voiceDuration || 0}
+              isOwnMessage={isOwnMessage}
+            />
+          )}
+          
+          <View style={styles.messageFooter}>
+            <Text style={[
+              styles.messageTime,
+              { color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.tabIconDefault }
+            ]}>
+              {formatTime(item.timestamp)}
+            </Text>
+            {isOwnMessage && (
+              <View style={styles.messageStatus}>
+                {getMessageStatusIcon(item.status)}
+              </View>
+            )}
+          </View>
+        </View>
+      </View>
     );
   };
 
@@ -333,15 +345,6 @@ const ChatScreen: React.FC<ChatScreenProps> = ({ user, currentUserId, onBack }) 
           onToggleAudio={toggleAudio}
           callerName={user.username}
           callerAvatar={user.avatar}
-        />
-      )}
-
-      {/* Image Viewer */}
-      {selectedImage && (
-        <ImageViewer
-          isVisible={!!selectedImage}
-          imageUri={selectedImage}
-          onClose={() => setSelectedImage(null)}
         />
       )}
     </View>
@@ -441,39 +444,6 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     marginHorizontal: 2,
-  },
-  messageContainer: {
-    marginBottom: Spacing.sm,
-  },
-  ownMessage: {
-    alignItems: 'flex-end',
-  },
-  otherMessage: {
-    alignItems: 'flex-start',
-  },
-  messageBubble: {
-    maxWidth: width * 0.75,
-    padding: Spacing.sm,
-    borderRadius: 18,
-    borderWidth: 1,
-  },
-  messageText: {
-    fontSize: FontSize.md,
-    fontFamily: FontFamily.regular,
-    lineHeight: 20,
-  },
-  messageFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginTop: 4,
-  },
-  messageTime: {
-    fontSize: FontSize.xs,
-    fontFamily: FontFamily.regular,
-  },
-  messageStatus: {
-    marginLeft: 4,
   },
 });
 

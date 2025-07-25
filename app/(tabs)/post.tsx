@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Platform } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Camera, X, Image as ImageIcon, Video, Gif, Smile, MapPin, Film } from 'lucide-react-native';
+import { Camera, X, Image as ImageIcon, Video, Gift as Gif, Smile, MapPin, Film } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/Theme';
