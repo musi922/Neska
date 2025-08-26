@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Analytics, ANALYTICS_EVENTS } from '@/utils/analytics';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 import HeaderBar from '@/components/HeaderBar';
@@ -9,6 +10,7 @@ import ContentCard from '@/components/ContentCard';
 import LivestreamPreview from '@/components/LivestreamPreview';
 import CategoryChip from '@/components/CategoryChip';
 import ProfileSummary from '@/components/ProfileSummary';
+import OfflineNotice from '@/components/OfflineNotice';
 
 // Mock data
 const categories = ['For You', 'Live', 'Following', 'Room'];
@@ -159,6 +161,11 @@ export default function HomeScreen() {
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
 
+  // Track screen view
+  React.useEffect(() => {
+    Analytics.screen('Home', { category: activeCategory });
+  }, [activeCategory]);
+
   // Filtered data for Following
   const followingFeed = feedContent.filter((item) => item.following);
   const followingCreators = creators.filter((c) => c.following);
@@ -167,8 +174,14 @@ export default function HomeScreen() {
     return followingCreators.some((c) => c.username === stream.username);
   });
 
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+    Analytics.track(ANALYTICS_EVENTS.USER_ACTION, { action: 'category_changed', category });
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <OfflineNotice />
       <HeaderBar />
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -189,7 +202,7 @@ export default function HomeScreen() {
                 key={category}
                 label={category}
                 isActive={activeCategory === category}
-                onPress={() => setActiveCategory(category)}
+                onPress={() => handleCategoryChange(category)}
               />
             ))}
           </ScrollView>
