@@ -5,10 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   Platform,
+  Modal,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
-import { Bell, MessageCircle, Heart, User } from 'lucide-react-native';
+import { router } from 'expo-router';  // Add this import
+import { Bell, MessageCircle, Heart, User, Search } from 'lucide-react-native'; // Add Search import
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -16,6 +18,7 @@ import { BlurView } from 'expo-blur';
 import ChatOverlay from './ChatOverlay';
 import NotificationOverlay from './NotificationOverlay';
 import ProfileOverlay from './ProfileOverlay';
+import ExploreContent from './ExploreContent'; // Import ExploreContent component
 
 interface HeaderBarProps {
   title?: string;
@@ -31,6 +34,7 @@ export default function HeaderBar({
   const [showChat, setShowChat] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showExplore, setShowExplore] = useState(false);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
@@ -45,6 +49,13 @@ export default function HeaderBar({
     setShowChat(false);
   };
 
+  const handleExplorePress = () => {
+    setShowExplore(true);
+  };
+
+  const handleCloseExplore = () => {
+    setShowExplore(false);
+  };
   const handleNotificationPress = () => {
     setShowNotifications(true);
   };
@@ -90,7 +101,13 @@ export default function HeaderBar({
 
           {showActions && (
             <View style={styles.actions}>
-              
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={handleExplorePress}
+              >
+                <Search size={24} color={colors.text} />
+              </TouchableOpacity>
+
               {/* Updated Notification Button with badge */}
               <TouchableOpacity 
                 style={styles.actionButton}
@@ -124,6 +141,10 @@ export default function HeaderBar({
           )}
         </View>
       </View>
+
+      {/* Add Modal for Explore Content */}
+
+        <ExploreContent isVisible={showExplore} onClose={handleCloseExplore}/>
 
       {/* Chat Overlay */}
       <ChatOverlay isVisible={showChat} onClose={handleCloseChat} />

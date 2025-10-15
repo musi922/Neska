@@ -31,6 +31,9 @@ import {
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 import { BlurView } from 'expo-blur';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { router } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
@@ -122,6 +125,7 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
   const insets = useSafeAreaInsets();
   // GEN Z brand color
   const neskaColor = '#00B4D8';
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const tabs = [
     { id: 'All', label: 'All', icon: MessageSquare, count: null },
@@ -168,7 +172,21 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
   };
 
   const renderChatItem = (chat: any) => (
-    <TouchableOpacity key={chat.id} style={styles.chatItem}>
+    <TouchableOpacity
+      key={chat.id}
+      style={styles.chatItem}
+      onPress={() => {
+        console.log('Navigating to chat:', chat.id);
+        try {
+          router.push({
+            pathname: '/chat/[id]',
+            params: { id: chat.id },
+          });
+        } catch (error) {
+          console.error('Navigation error:', error);
+        }
+      }}
+    >
       <View style={styles.avatarContainer}>
         <Image source={{ uri: chat.avatar }} style={styles.avatar} />
         {chat.hasStory && (

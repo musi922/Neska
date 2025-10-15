@@ -8,6 +8,7 @@ import {
   Alert,
   Image,
   ScrollView,
+  Modal,
 } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useColorScheme } from 'react-native';
@@ -52,48 +53,59 @@ const filters: Filter[] = [
     style: {},
   },
   {
-    id: 'vintage',
-    name: 'Vintage',
+    id: 'golden',
+    name: 'Golden',
     icon: <Sun size={20} color="#FFF" />,
     style: {
-      opacity: 0.9,
-      tintColor: '#F4A460',
+      backgroundColor: 'rgba(234, 173, 59, 0.25)',
     },
   },
   {
-    id: 'cool',
-    name: 'Cool',
+    id: 'noir',
+    name: 'Noir',
     icon: <Moon size={20} color="#FFF" />,
     style: {
-      opacity: 0.8,
-      tintColor: '#87CEEB',
+      backgroundColor: 'rgba(66, 65, 65, 0.5)',
     },
   },
   {
-    id: 'warm',
-    name: 'Warm',
-    icon: <Heart size={20} color="#FFF" />,
-    style: {
-      opacity: 0.85,
-      tintColor: '#FFB6C1',
-    },
-  },
-  {
-    id: 'dramatic',
-    name: 'Drama',
+    id: 'chrome',
+    name: 'Chrome',
     icon: <Star size={20} color="#FFF" />,
     style: {
-      opacity: 0.9,
-      tintColor: '#8A2BE2',
+      backgroundColor: 'rgba(200, 200, 220, 0.3)',
     },
   },
   {
-    id: 'bright',
-    name: 'Bright',
+    id: 'tokyo',
+    name: 'Tokyo',
     icon: <Sparkles size={20} color="#FFF" />,
     style: {
-      opacity: 0.95,
-      tintColor: '#FFD700',
+      backgroundColor: 'rgba(255, 192, 203, 0.25)',
+    },
+  },
+  {
+    id: 'arctic',
+    name: 'Arctic',
+    icon: <Heart size={20} color="#FFF" />,
+    style: {
+      backgroundColor: 'rgba(100, 200, 255, 0.25)',
+    },
+  },
+  {
+    id: 'sunset',
+    name: 'Sunset',
+    icon: <Smile size={20} color="#FFF" />,
+    style: {
+      backgroundColor: 'rgba(255, 100, 80, 0.3)',
+    },
+  },
+  {
+    id: 'lavender',
+    name: 'Lavender',
+    icon: <Palette size={20} color="#FFF" />,
+    style: {
+      backgroundColor: 'rgba(180, 140, 255, 0.25)',
     },
   },
 ];
@@ -115,13 +127,14 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
-  
+
   const [permission, requestPermission] = useCameraPermissions();
-  const [mediaLibraryPermission, requestMediaLibraryPermission] = MediaLibrary.usePermissions();
-  
+  const [mediaLibraryPermission, requestMediaLibraryPermission] =
+    MediaLibrary.usePermissions();
+
   const cameraRef = useRef<CameraView>(null);
   const recordingInterval = useRef<NodeJS.Timeout>();
-  
+
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
@@ -129,7 +142,7 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
   useEffect(() => {
     if (isRecording) {
       recordingInterval.current = setInterval(() => {
-        setRecordingDuration(prev => prev + 1);
+        setRecordingDuration((prev) => prev + 1);
       }, 1000);
     } else {
       if (recordingInterval.current) {
@@ -151,25 +164,36 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
 
   if (!permission.granted) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <View style={styles.permissionContainer}>
-          <Camera size={64} color={colors.tabIconDefault} />
-          <Text style={[styles.permissionText, { color: colors.text }]}>
-            We need your permission to show the camera
-          </Text>
-          <TouchableOpacity
-            style={[styles.permissionButton, { backgroundColor: colors.tint }]}
-            onPress={requestPermission}
-          >
-            <Text style={styles.permissionButtonText}>Grant Permission</Text>
-          </TouchableOpacity>
+      <Modal
+        visible={isVisible}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <View
+          style={[styles.container, { backgroundColor: colors.background }]}
+        >
+          <View style={styles.permissionContainer}>
+            <Camera size={64} color={colors.tabIconDefault} />
+            <Text style={[styles.permissionText, { color: colors.text }]}>
+              We need your permission to show the camera
+            </Text>
+            <TouchableOpacity
+              style={[
+                styles.permissionButton,
+                { backgroundColor: colors.tint },
+              ]}
+              onPress={requestPermission}
+            >
+              <Text style={styles.permissionButtonText}>Grant Permission</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </Modal>
     );
   }
 
   const toggleCameraFacing = () => {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   };
 
   const toggleFlash = () => {
@@ -183,7 +207,7 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
           quality: 0.8,
           base64: false,
         });
-        
+
         if (photo) {
           setCapturedPhoto(photo.uri);
         }
@@ -202,7 +226,7 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
           quality: '720p',
           maxDuration: 60,
         });
-        
+
         if (video) {
           setCapturedPhoto(video.uri);
         }
@@ -229,7 +253,10 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
       if (!mediaLibraryPermission?.granted) {
         const { status } = await requestMediaLibraryPermission();
         if (status !== 'granted') {
-          Alert.alert('Permission Required', 'Please grant media library permission to save photos');
+          Alert.alert(
+            'Permission Required',
+            'Please grant media library permission to save photos'
+          );
           return;
         }
       }
@@ -245,12 +272,20 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
   const sharePhoto = () => {
     if (capturedPhoto && onCapture) {
       onCapture(capturedPhoto);
+      setCapturedPhoto(null);
       onClose();
     }
   };
 
   const retakePhoto = () => {
     setCapturedPhoto(null);
+    setSelectedFilter('none'); // Reset filter too
+  };
+
+  const handleClose = () => {
+    setCapturedPhoto(null);
+    setSelectedFilter('none');
+    onClose();
   };
 
   const formatRecordingTime = (seconds: number) => {
@@ -263,142 +298,184 @@ const CameraScreen: React.FC<CameraScreenProps> = ({
 
   if (capturedPhoto) {
     return (
-      <View style={styles.container}>
-        <Image source={{ uri: capturedPhoto }} style={styles.previewImage} />
-        
-        {/* Preview Overlay */}
-        <LinearGradient
-          colors={['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.6)']}
-          style={styles.previewOverlay}
-        >
-          <View style={[styles.previewHeader, { paddingTop: insets.top + 10 }]}>
-            <TouchableOpacity onPress={retakePhoto} style={styles.previewButton}>
-              <X size={24} color="#FFF" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={saveToGallery} style={styles.previewButton}>
-              <Download size={24} color="#FFF" />
-            </TouchableOpacity>
-          </View>
+      <Modal
+        visible={isVisible}
+        animationType="slide"
+        presentationStyle="fullScreen"
+      >
+        <View style={styles.container}>
+          <Image source={{ uri: capturedPhoto }} style={styles.previewImage} />
 
-          <View style={[styles.previewFooter, { paddingBottom: insets.bottom + 20 }]}>
-            <TouchableOpacity onPress={retakePhoto} style={styles.retakeButton}>
-              <Text style={styles.retakeText}>Retake</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity onPress={sharePhoto} style={styles.shareButton}>
-              <Share2 size={20} color="#FFF" />
-              <Text style={styles.shareText}>Share</Text>
-            </TouchableOpacity>
-          </View>
-        </LinearGradient>
-      </View>
+          {/* Preview Overlay */}
+          <LinearGradient
+            colors={['rgba(0,0,0,0.6)', 'transparent', 'rgba(0,0,0,0.6)']}
+            style={styles.previewOverlay}
+          >
+            <View
+              style={[styles.previewHeader, { paddingTop: insets.top + 10 }]}
+            >
+              <TouchableOpacity
+                onPress={retakePhoto}
+                style={styles.previewButton}
+              >
+                <X size={24} color="#FFF" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={saveToGallery}
+                style={styles.previewButton}
+              >
+                <Download size={24} color="#FFF" />
+              </TouchableOpacity>
+            </View>
+
+            <View
+              style={[
+                styles.previewFooter,
+                { paddingBottom: insets.bottom + 20 },
+              ]}
+            >
+              <TouchableOpacity
+                onPress={retakePhoto}
+                style={styles.retakeButton}
+              >
+                <Text style={styles.retakeText}>Retake</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={sharePhoto} style={styles.shareButton}>
+                <Share2 size={20} color="#FFF" />
+                <Text style={styles.shareText}>Share</Text>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </View>
+      </Modal>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <CameraView
-        ref={cameraRef}
-        style={styles.camera}
-        facing={facing}
-        flash={flash ? 'on' : 'off'}
-      >
-        {/* Filter Overlay */}
-        {selectedFilter !== 'none' && (
+    <Modal
+      visible={isVisible}
+      animationType="slide"
+      presentationStyle="fullScreen"
+    >
+      <View style={styles.container}>
+        <CameraView
+          ref={cameraRef}
+          style={styles.camera}
+          facing={facing}
+          flash={flash ? 'on' : 'off'}
+        >
+          {/* Filter Overlay */}
+          {selectedFilter !== 'none' && (
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                filters.find((f) => f.id === selectedFilter)?.style,
+              ]}
+            />
+          )}
+
+          {/* Top Controls */}
+          <View style={[styles.topControls, { paddingTop: insets.top + 10 }]}>
+            <TouchableOpacity
+              onPress={handleClose}
+              style={styles.controlButton}
+            >
+              <X size={24} color="#FFF" />
+            </TouchableOpacity>
+
+            <View style={styles.topRightControls}>
+              <TouchableOpacity
+                onPress={toggleFlash}
+                style={styles.controlButton}
+              >
+                {flash ? (
+                  <Zap size={24} color="#FFD700" />
+                ) : (
+                  <ZapOff size={24} color="#FFF" />
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={toggleCameraFacing}
+                style={styles.controlButton}
+              >
+                <RotateCcw size={24} color="#FFF" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Recording Indicator */}
+          {isRecording && (
+            <View style={styles.recordingIndicator}>
+              <View style={styles.recordingDot} />
+              <Text style={styles.recordingText}>
+                REC {formatRecordingTime(recordingDuration)}
+              </Text>
+            </View>
+          )}
+
+          {/* Filters */}
+          <View style={styles.filtersContainer}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.filtersScroll}
+            >
+              {filters.map((filter) => (
+                <TouchableOpacity
+                  key={filter.id}
+                  style={[
+                    styles.filterButton,
+                    selectedFilter === filter.id && styles.selectedFilter,
+                  ]}
+                  onPress={() => setSelectedFilter(filter.id)}
+                >
+                  <View style={styles.filterIcon}>{filter.icon}</View>
+                  <Text style={styles.filterName}>{filter.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Bottom Controls */}
           <View
             style={[
-              StyleSheet.absoluteFill,
-              filters.find(f => f.id === selectedFilter)?.style,
+              styles.bottomControls,
+              { paddingBottom: insets.bottom + 20 },
             ]}
-          />
-        )}
-
-        {/* Top Controls */}
-        <View style={[styles.topControls, { paddingTop: insets.top + 10 }]}>
-          <TouchableOpacity onPress={onClose} style={styles.controlButton}>
-            <X size={24} color="#FFF" />
-          </TouchableOpacity>
-
-          <View style={styles.topRightControls}>
-            <TouchableOpacity onPress={toggleFlash} style={styles.controlButton}>
-              {flash ? (
-                <Zap size={24} color="#FFD700" />
-              ) : (
-                <ZapOff size={24} color="#FFF" />
-              )}
-            </TouchableOpacity>
-            
-            <TouchableOpacity onPress={toggleCameraFacing} style={styles.controlButton}>
-              <RotateCcw size={24} color="#FFF" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Recording Indicator */}
-        {isRecording && (
-          <View style={styles.recordingIndicator}>
-            <View style={styles.recordingDot} />
-            <Text style={styles.recordingText}>
-              REC {formatRecordingTime(recordingDuration)}
-            </Text>
-          </View>
-        )}
-
-        {/* Filters */}
-        <View style={styles.filtersContainer}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.filtersScroll}
           >
-            {filters.map((filter) => (
+            <View style={styles.captureControls}>
               <TouchableOpacity
-                key={filter.id}
-                style={[
-                  styles.filterButton,
-                  selectedFilter === filter.id && styles.selectedFilter,
-                ]}
-                onPress={() => setSelectedFilter(filter.id)}
+                style={styles.captureButton}
+                onPress={takePicture}
+                disabled={isRecording}
               >
-                <View style={styles.filterIcon}>
-                  {filter.icon}
+                <View
+                  style={[
+                    styles.captureButtonInner,
+                    isRecording && styles.captureButtonRecording,
+                  ]}
+                >
+                  <Circle size={60} color="#FFF" fill="#FFF" />
                 </View>
-                <Text style={styles.filterName}>{filter.name}</Text>
               </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
 
-        {/* Bottom Controls */}
-        <View style={[styles.bottomControls, { paddingBottom: insets.bottom + 20 }]}>
-          <View style={styles.captureControls}>
-            <TouchableOpacity
-              style={styles.captureButton}
-              onPress={takePicture}
-              disabled={isRecording}
-            >
-              <View style={[
-                styles.captureButtonInner,
-                isRecording && styles.captureButtonRecording,
-              ]}>
-                <Circle size={60} color="#FFF" fill="#FFF" />
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.videoButton}
-              onPress={isRecording ? stopVideoRecording : startVideoRecording}
-            >
-              <Square 
-                size={24} 
-                color={isRecording ? "#EF4444" : "#FFF"} 
-                fill={isRecording ? "#EF4444" : "none"}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.videoButton}
+                onPress={isRecording ? stopVideoRecording : startVideoRecording}
+              >
+                <Square
+                  size={24}
+                  color={isRecording ? '#EF4444' : '#FFF'}
+                  fill={isRecording ? '#EF4444' : 'none'}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </CameraView>
-    </View>
+        </CameraView>
+      </View>
+    </Modal>
   );
 };
 

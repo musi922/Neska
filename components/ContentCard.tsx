@@ -41,6 +41,7 @@ import {
 import { useColorScheme } from 'react-native';
 import { BlurView } from 'expo-blur';
 import Svg, { Path } from 'react-native-svg';
+import { router } from 'expo-router';
 
 interface Reply {
   id: string;

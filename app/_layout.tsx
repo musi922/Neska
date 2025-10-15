@@ -11,11 +11,9 @@ import {
   Poppins_400Regular,
   Poppins_500Medium,
   Poppins_600SemiBold,
-  Poppins_700Bold
+  Poppins_700Bold,
 } from '@expo-google-fonts/poppins';
-import {
-  Montserrat_700Bold
-} from '@expo-google-fonts/montserrat';
+import { Montserrat_700Bold } from '@expo-google-fonts/montserrat';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -57,13 +55,29 @@ export default function RootLayout() {
     <>
       <ErrorBoundary>
         <AuthProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" options={{ presentation: 'modal' }} />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="chat"
+              options={{
+                headerShown: false,
+                presentation: 'modal',
+              }}
+            />
+            <Stack.Screen
+              name="index"
+              options={{
+                headerShown: false,
+              }}
+            />
           </Stack>
-          <StatusBar style="light" />
         </AuthProvider>
       </ErrorBoundary>
+      <StatusBar style="auto" />
     </>
   );
 }

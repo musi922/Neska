@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+} from 'react-native';
 import { Play, Pause } from 'lucide-react-native';
 import { Audio } from 'expo-av';
-import { useColorScheme } from 'react-native';
-import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 
 interface VoiceMessagePlayerProps {
@@ -15,15 +19,15 @@ interface VoiceMessagePlayerProps {
 const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({
   uri,
   duration,
-  isOwnMessage
+  isOwnMessage,
 }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [position, setPosition] = useState(0);
-  const [playbackDuration, setPlaybackDuration] = useState(duration);
-  
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
+
+  const waveAnimations = useRef(
+    Array.from({ length: 20 }, () => new Animated.Value(0.3))
+  ).current;
 
   useEffect(() => {
     return () => {
@@ -33,84 +37,133 @@ const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({
     };
   }, [sound]);
 
-  const playPauseAudio = async () => {
+  useEffect(() => {
+    if (isPlaying) {
+      const animations = waveAnimations.map((anim, index) =>
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(anim, {
+              toValue: Math.random() * 0.7 + 0.3,
+              duration: 200 + Math.random() * 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+              toValue: 0.3,
+              duration: 200 + Math.random() * 200,
+              useNativeDriver: true,
+            }),
+          ])
+        )
+      );
+
+      animations.forEach((anim, index) => {
+        setTimeout(() => anim.start(), index * 50);
+      });
+
+      return () => {
+        animations.forEach((anim) => anim.stop());
+      };
+    } else {
+      waveAnimations.forEach((anim) => {
+        Animated.timing(anim, {
+          toValue: 0.3,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      });
+    }
+  }, [isPlaying]);
+
+  const playSound = async () => {
     try {
       if (sound) {
         if (isPlaying) {
           await sound.pauseAsync();
+          setIsPlaying(false);
         } else {
           await sound.playAsync();
+          setIsPlaying(true);
         }
-        setIsPlaying(!isPlaying);
       } else {
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri },
-          { shouldPlay: true }
+          { shouldPlay: true },
+          onPlaybackStatusUpdate
         );
-        
         setSound(newSound);
         setIsPlaying(true);
-        
-        newSound.setOnPlaybackStatusUpdate((status) => {
-          if (status.isLoaded) {
-            setPosition(status.positionMillis || 0);
-            setPlaybackDuration(status.durationMillis || duration * 1000);
-            
-            if (status.didJustFinish) {
-              setIsPlaying(false);
-              setPosition(0);
-            }
-          }
-        });
       }
     } catch (error) {
-      console.error('Error playing audio:', error);
+      console.error('Error playing sound:', error);
     }
   };
 
-  const formatTime = (milliseconds: number) => {
-    const seconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  const onPlaybackStatusUpdate = (status: any) => {
+    if (status.isLoaded) {
+      if (status.positionMillis) {
+        setCurrentTime(Math.floor(status.positionMillis / 1000));
+      }
+      if (status.didJustFinish) {
+        setIsPlaying(false);
+        setCurrentTime(0);
+        if (sound) {
+          sound.setPositionAsync(0);
+        }
+      }
+    }
   };
 
-  const progressPercentage = playbackDuration > 0 ? (position / playbackDuration) * 100 : 0;
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const displayTime = isPlaying ? currentTime : duration;
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={playPauseAudio} style={[
-        styles.playButton,
-        { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.2)' : colors.subtle }
-      ]}>
+      <TouchableOpacity
+        onPress={playSound}
+        style={[
+          styles.playButton,
+          {
+            backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.2)' : '#00B4D8',
+          },
+        ]}
+      >
         {isPlaying ? (
-          <Pause size={16} color={isOwnMessage ? '#FFF' : colors.text} />
+          <Pause size={16} color="#FFF" />
         ) : (
-          <Play size={16} color={isOwnMessage ? '#FFF' : colors.text} />
+          <Play size={16} color="#FFF" />
         )}
       </TouchableOpacity>
-      
+
       <View style={styles.waveformContainer}>
-        <View style={[
-          styles.waveformBackground,
-          { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.3)' : colors.border }
-        ]}>
-          <View style={[
-            styles.waveformProgress,
-            {
-              width: `${progressPercentage}%`,
-              backgroundColor: isOwnMessage ? '#FFF' : '#00B4D8'
-            }
-          ]} />
-        </View>
-        
-        <Text style={[
-          styles.durationText,
-          { color: isOwnMessage ? 'rgba(255,255,255,0.8)' : colors.tabIconDefault }
-        ]}>
-          {formatTime(isPlaying ? position : playbackDuration)}
-        </Text>
+        {waveAnimations.map((anim, index) => (
+          <Animated.View
+            key={index}
+            style={[
+              styles.waveBar,
+              {
+                backgroundColor: isOwnMessage
+                  ? 'rgba(255,255,255,0.6)'
+                  : '#00B4D8',
+                transform: [{ scaleY: anim }],
+              },
+            ]}
+          />
+        ))}
       </View>
+
+      <Text
+        style={[
+          styles.timeText,
+          { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : '#666' },
+        ]}
+      >
+        {formatTime(displayTime)}
+      </Text>
     </View>
   );
 };
@@ -119,7 +172,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    minWidth: 150,
+    paddingVertical: Spacing.xs,
+    minWidth: 200,
   },
   playButton: {
     width: 32,
@@ -131,21 +185,21 @@ const styles = StyleSheet.create({
   },
   waveformContainer: {
     flex: 1,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 30,
+    marginRight: Spacing.sm,
   },
-  waveformBackground: {
-    height: 4,
-    borderRadius: 2,
-    marginBottom: 4,
-    overflow: 'hidden',
+  waveBar: {
+    width: 3,
+    height: 30,
+    borderRadius: 1.5,
+    marginHorizontal: 1.5,
   },
-  waveformProgress: {
-    height: '100%',
-    borderRadius: 2,
-  },
-  durationText: {
+  timeText: {
     fontSize: FontSize.xs,
-    fontFamily: FontFamily.regular,
+    fontFamily: FontFamily.medium,
+    minWidth: 35,
   },
 });
 

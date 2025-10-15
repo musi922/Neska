@@ -7,7 +7,7 @@ import { useColorScheme } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Spacing } from '@/constants/Theme';
 
-export default function TabLayout() {
+export default function TabsLayout() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
@@ -66,24 +66,6 @@ export default function TabLayout() {
             </View>
           ),
           tabBarLabel: () => null,
-        }}
-      />
-      <Tabs.Screen
-        name="chat"
-        options={{
-          title: 'Chat',
-          tabBarIcon: ({ color, size }) => (
-            <MessageCircle size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Search',
-          tabBarIcon: ({ color, size }) => (
-            <Search size={size} color={color}/>
-          ),
         }}
       />
       <Tabs.Screen

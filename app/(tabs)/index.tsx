@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Image } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Analytics, ANALYTICS_EVENTS } from '@/utils/analytics';
@@ -11,6 +11,7 @@ import LivestreamPreview from '@/components/LivestreamPreview';
 import CategoryChip from '@/components/CategoryChip';
 import ProfileSummary from '@/components/ProfileSummary';
 import OfflineNotice from '@/components/OfflineNotice';
+import { router } from 'expo-router';
 
 // Mock data
 const categories = ['For You', 'Live', 'Following', 'Room'];
@@ -225,6 +226,10 @@ export default function HomeScreen() {
                   avatar={creator.avatar}
                   username={creator.username}
                   isLive={creator.isLive}
+                  onPress={() => {
+                    console.log('Creator pressed:', creator.username);
+                    router.push(`/story/${creator.id}`);
+                  }}
                 />
               ))}
             </ScrollView>
@@ -354,7 +359,7 @@ export default function HomeScreen() {
             </View>
           </View>
         )}
-        {/* Room: leave as-is for now */}
+    
       </ScrollView>
     </View>
   );
@@ -396,4 +401,35 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingHorizontal: Spacing.md,
   },
+  creatorItem: {
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  creatorAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginBottom: 4,
+  },
+  creatorAvatarLive: {
+    borderWidth: 2,
+    borderColor: '#FF0000',
+  },
+  creatorUsername: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  liveBadge: {
+    position: 'absolute',
+    bottom: 12,
+    backgroundColor: '#FF0000',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  liveText: {
+    color: '#FFFFFF',
+    fontSize: 8,
+    fontWeight: 'bold',
+  }
 });
