@@ -12,9 +12,10 @@ import CategoryChip from '@/components/CategoryChip';
 import ProfileSummary from '@/components/ProfileSummary';
 import OfflineNotice from '@/components/OfflineNotice';
 import { router } from 'expo-router';
+import StoriesSection from '@/components/StoriesSection';
 
 // Mock data
-const categories = ['For You', 'Live', 'Following', 'Room'];
+const categories = ['For You', 'Stories', 'Live', 'Watch', 'Following'];
 
 const liveStreams = [
   {
@@ -209,31 +210,15 @@ export default function HomeScreen() {
           </ScrollView>
         </View>
 
-        {/* Popular Creators (show for all except 'Live') */}
-        {activeCategory !== 'Live' && (
-          <View style={styles.section}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.creatorsScroll}
-            >
-              {(activeCategory === 'Following'
-                ? followingCreators
-                : creators
-              ).map((creator) => (
-                <ProfileSummary
-                  key={creator.id}
-                  avatar={creator.avatar}
-                  username={creator.username}
-                  isLive={creator.isLive}
-                  onPress={() => {
-                    console.log('Creator pressed:', creator.username);
-                    router.push(`/story/${creator.id}`);
-                  }}
-                />
-              ))}
-            </ScrollView>
-          </View>
+        {/* Show StoriesSection only when Stories category is selected */}
+        {activeCategory === 'Stories' && (
+          <StoriesSection 
+            stories={creators} 
+            onStoryPress={(story) => {
+              console.log('Story pressed:', story.username);
+              router.push(`/story/${story.id}`);
+            }}
+          />
         )}
 
         {/* Live Now (horizontal for For You/Following, vertical for Live) */}
@@ -274,7 +259,7 @@ export default function HomeScreen() {
                         alignSelf: 'center',
                       }}
                     >
-                      No one you follow is live right now.
+                      No one you follow is live
                     </Text>
                   ) : (
                     followingLiveStreams.map((stream) => (

@@ -96,7 +96,7 @@ export default function StoryDetailScreen() {
         </View>
         <TouchableOpacity
           onPress={() => {
-            router.push("/"); // This will navigate to root and clear the URL
+            router.back(); // Navigate back to previous screen
           }}
           style={styles.closeButton}
         >
@@ -116,9 +116,6 @@ export default function StoryDetailScreen() {
             <Ionicons name="paper-plane" size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.likeButton}>
-          <Ionicons name="heart-outline" size={24} color="#FFF" />
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -219,13 +216,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     // Removed backgroundColor since it's inside messageContainer
-  },
-  likeButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0,0,0,0.5)', // Match close button background
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  }
 });

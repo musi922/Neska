@@ -15,6 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from 'expo-blur';
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing, BorderRadius, Shadow } from '@/constants/Theme';
+import CategoryChip from './CategoryChip';
+import StoriesSection from './StoriesSection';
 
 const { width, height } = Dimensions.get('window');
 
@@ -34,6 +36,9 @@ const exploreCategories = [
   { id: '6', name: 'Awards', icon: <Award size={24} color="#EF4444" /> },
 ];
 
+const CATEGORIES = ['Stories', 'For You', 'Live', 'Following'] as const;
+type Category = typeof CATEGORIES[number];
+
 interface ExploreContentProps {
   isVisible: boolean;
   onClose: () => void;
@@ -41,10 +46,26 @@ interface ExploreContentProps {
 
 const ExploreContent: React.FC<ExploreContentProps> = ({ isVisible, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<Category>('For You');
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
   const neskaColor = '#00B4D8';
+
+  const renderContent = () => {
+    switch (selectedCategory) {
+      case 'Stories':
+        return <StoriesSection />;
+      case 'For You':
+        return null;
+      case 'Live':
+        return null;
+      case 'Following':
+        return null;
+      default:
+        return null;
+    }
+  };
 
   return isVisible ? (
     <View style={[styles.overlay, { backgroundColor: colors.background }]}>
@@ -98,35 +119,6 @@ const ExploreContent: React.FC<ExploreContentProps> = ({ isVisible, onClose }) =
         style={styles.content}
         contentContainerStyle={styles.contentContainer}
       >
-        {/* Trending Topics */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Trending Topics
-          </Text>
-          <View style={[styles.trendingCard, { backgroundColor: colors.card }]}>
-            {trendingTopics.map((topic, index) => (
-              <React.Fragment key={topic.id}>
-                <TouchableOpacity style={styles.trendingItem}>
-                  <View style={[styles.trendingIconContainer, { backgroundColor: colors.subtle }]}>
-                    {topic.icon}
-                  </View>
-                  <View style={styles.trendingContent}>
-                    <Text style={[styles.trendingName, { color: colors.text }]}>
-                      {topic.name}
-                    </Text>
-                    <Text style={[styles.trendingCount, { color: colors.tabIconDefault }]}>
-                      {topic.count}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                {index < trendingTopics.length - 1 && (
-                  <View style={[styles.divider, { backgroundColor: colors.border }]} />
-                )}
-              </React.Fragment>
-            ))}
-          </View>
-        </View>
-
         {/* Categories */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
@@ -146,6 +138,21 @@ const ExploreContent: React.FC<ExploreContentProps> = ({ isVisible, onClose }) =
             ))}
           </View>
         </View>
+
+        {/* Story Categories */}
+        <View style={styles.categories}>
+          {CATEGORIES.map((category) => (
+            <CategoryChip
+              key={category}
+              label={category}
+              selected={selectedCategory === category}
+              onPress={() => setSelectedCategory(category)}
+            />
+          ))}
+        </View>
+
+        {/* Render Content Based on Selected Category */}
+        {renderContent()}
       </ScrollView>
     </View>
   ) : null;
@@ -277,6 +284,12 @@ const styles = StyleSheet.create({
   categoryName: {
     fontFamily: FontFamily.medium,
     fontSize: FontSize.md,
+  },
+  categories: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 8,
   },
 });
 
