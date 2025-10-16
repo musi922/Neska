@@ -15,7 +15,7 @@ import { router } from 'expo-router';
 import StoriesSection from '@/components/StoriesSection';
 
 // Mock data
-const categories = ['For You', 'Stories', 'Live', 'Watch', 'Following'];
+const categories = ['For You', 'Stories', 'Watch', 'Live', 'Following'];
 
 const liveStreams = [
   {
@@ -157,6 +157,75 @@ const feedContent = [
   },
 ];
 
+const watchVideos = [
+  {
+    id: '1',
+    thumbnail: 'https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg',
+    title: 'How to Make Traditional Rwandan Coffee | Complete Guide',
+    username: 'coffee_master_rw',
+    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+    views: 45000,
+    duration: '12:34',
+    uploadedAt: '2 days ago',
+    verified: true,
+  },
+  {
+    id: '2',
+    thumbnail: 'https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg',
+    title: 'Stand-up Comedy Night in Kigali - Best Moments 2024',
+    username: 'comedian_k',
+    avatar: 'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
+    views: 128000,
+    duration: '25:18',
+    uploadedAt: '1 week ago',
+    verified: false,
+  },
+  {
+    id: '3',
+    thumbnail: 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg',
+    title: 'Afrobeat Dance Tutorial - Learn the Latest Moves',
+    username: 'dance_queen',
+    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    views: 89000,
+    duration: '8:45',
+    uploadedAt: '3 days ago',
+    verified: true,
+  },
+  {
+    id: '4',
+    thumbnail: 'https://images.pexels.com/photos/1917838/pexels-photo-1917838.jpeg',
+    title: 'Top 10 Places to Visit in Rwanda | Travel Vlog',
+    username: 'travel_with_me',
+    avatar: 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg',
+    views: 210000,
+    duration: '15:22',
+    uploadedAt: '5 days ago',
+    verified: true,
+  },
+  {
+    id: '5',
+    thumbnail: 'https://images.pexels.com/photos/1267697/pexels-photo-1267697.jpeg',
+    title: 'Learn Python in 30 Minutes - Beginner Crash Course',
+    username: 'tech_eric',
+    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+    views: 156000,
+    duration: '30:15',
+    uploadedAt: '1 week ago',
+    verified: true,
+  },
+  {
+    id: '6',
+    thumbnail: 'https://images.pexels.com/photos/1109197/pexels-photo-1109197.jpeg',
+    title: 'New Afrobeat Mix 2024 | Best African Music Playlist',
+    username: 'musiclover243',
+    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+    views: 340000,
+    duration: '45:00',
+    uploadedAt: '2 weeks ago',
+    verified: false,
+  },
+];
+
 export default function HomeScreen() {
   const [activeCategory, setActiveCategory] = useState('For You');
   const colorScheme = useColorScheme();
@@ -290,6 +359,55 @@ export default function HomeScreen() {
           </View>
         )}
 
+        {/* Watch Section (show only for 'Watch') */}
+        {activeCategory === 'Watch' && (
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Recommended Videos
+            </Text>
+            <View style={styles.watchContainer}>
+              {watchVideos.map((video) => (
+                <TouchableOpacity 
+                  key={video.id} 
+                  style={styles.videoCard}
+                  onPress={() => console.log('Video pressed:', video.title)}
+                >
+                  <View style={styles.thumbnailContainer}>
+                    <Image 
+                      source={{ uri: video.thumbnail }} 
+                      style={styles.videoThumbnail}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.durationBadge}>
+                      <Text style={styles.durationText}>{video.duration}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.videoInfo}>
+                    <Image 
+                      source={{ uri: video.avatar }} 
+                      style={styles.videoAvatar}
+                    />
+                    <View style={styles.videoDetails}>
+                      <Text style={[styles.videoTitle, { color: colors.text }]} numberOfLines={2}>
+                        {video.title}
+                      </Text>
+                      <View style={styles.videoMeta}>
+                        <Text style={[styles.videoUsername, { color: colors.text }]}>
+                          {video.username}
+                          {video.verified && ' ✓'}
+                        </Text>
+                        <Text style={[styles.videoStats, { color: colors.text }]}>
+                          {video.views.toLocaleString()} views • {video.uploadedAt}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
+
         {/* For You Feed (show only for 'For You') */}
         {activeCategory === 'For You' && (
           <View style={styles.section}>
@@ -416,5 +534,69 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 8,
     fontWeight: 'bold',
+  },
+  watchContainer: {
+    paddingHorizontal: Spacing.md,
+    gap: 16,
+  },
+  videoCard: {
+    marginBottom: 16,
+  },
+  thumbnailContainer: {
+    position: 'relative',
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
+  videoThumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  durationBadge: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  durationText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontFamily: FontFamily.medium,
+  },
+  videoInfo: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  videoAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  videoDetails: {
+    flex: 1,
+  },
+  videoTitle: {
+    fontFamily: FontFamily.semiBold,
+    fontSize: 14,
+    marginBottom: 4,
+    lineHeight: 20,
+  },
+  videoMeta: {
+    gap: 2,
+  },
+  videoUsername: {
+    fontSize: 12,
+    opacity: 0.7,
+    fontFamily: FontFamily.medium,
+  },
+  videoStats: {
+    fontSize: 12,
+    opacity: 0.6,
+    fontFamily: FontFamily.regular,
   }
 });
