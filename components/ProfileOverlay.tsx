@@ -346,12 +346,6 @@ const ProfileOverlay: React.FC<ProfileOverlayProps> = ({
                 Edit Profile
               </Text>
             </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.iconButton, { backgroundColor: colors.border }]}
-            >
-              <UserPlus size={16} color={colors.text} />
-            </TouchableOpacity>
           </View>
         </View>
 

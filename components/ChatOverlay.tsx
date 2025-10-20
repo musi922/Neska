@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Dimensions,
   Image,
   Platform,
+  Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
@@ -34,6 +35,7 @@ import { BlurView } from 'expo-blur';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { router } from 'expo-router';
+import ChatScreenSkeleton from '@/components/skeletons/ChatScreenSkeleton';
 
 const { width, height } = Dimensions.get('window');
 
@@ -120,12 +122,16 @@ interface ChatOverlayProps {
 const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const contentFadeAnim = useRef(new Animated.Value(0)).current;
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
   // GEN Z brand color
   const neskaColor = '#00B4D8';
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const tabs = [
     { id: 'All', label: 'All', icon: MessageSquare, count: null },
@@ -284,6 +290,33 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
     </TouchableOpacity>
   );
 
+  // Add loading effect
+  useEffect(() => {
+    if (isVisible) {
+      setIsLoading(true);
+      setTimeout(() => {
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 200, // Reduced from 300
+            useNativeDriver: true,
+          }),
+          Animated.timing(contentFadeAnim, {
+            toValue: 1,
+            duration: 200, // Reduced from 300
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          setIsLoading(false);
+        });
+      }, 600); // Reduced from 1500
+    } else {
+      setIsLoading(true);
+      fadeAnim.setValue(1);
+      contentFadeAnim.setValue(0);
+    }
+  }, [isVisible]);
+
   return isVisible ? (
     <View
       style={[
@@ -389,21 +422,32 @@ const ChatOverlay: React.FC<ChatOverlayProps> = ({ isVisible, onClose }) => {
         </ScrollView>
       </View>
 
-      {/* Chat List */}
-      <ScrollView style={styles.chatList} showsVerticalScrollIndicator={false}>
-        {getFilteredChats().map(renderChatItem)}
+      {/* Show either skeleton or content */}
+      {isLoading ? (
+        <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+          <ChatScreenSkeleton />
+        </Animated.View>
+      ) : (
+        <Animated.View style={{ flex: 1, opacity: contentFadeAnim }}>
+          <ScrollView
+            style={styles.chatList}
+            showsVerticalScrollIndicator={false}
+          >
+            {getFilteredChats().map(renderChatItem)}
 
-        {getFilteredChats().length === 0 && (
-          <View style={styles.emptyState}>
-            <MessageSquare size={48} color={colors.secondary} />
-            <Text style={[styles.emptyText, { color: colors.secondary }]}>
-              {searchQuery
-                ? 'No chats found'
-                : `No ${activeTab.toLowerCase()} chats`}
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+            {getFilteredChats().length === 0 && (
+              <View style={styles.emptyState}>
+                <MessageSquare size={48} color={colors.secondary} />
+                <Text style={[styles.emptyText, { color: colors.secondary }]}>
+                  {searchQuery
+                    ? 'No chats found'
+                    : `No ${activeTab.toLowerCase()} chats`}
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        </Animated.View>
+      )}
     </View>
   ) : null;
 };

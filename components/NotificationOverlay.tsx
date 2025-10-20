@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Image,
   Dimensions,
   Platform,
+  Animated,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
@@ -32,6 +33,7 @@ import {
 import Colors from '@/constants/Colors';
 import { FontFamily, FontSize, Spacing } from '@/constants/Theme';
 import { BlurView } from 'expo-blur';
+import NotificationsSkeleton from '@/components/skeletons/NotificationsSkeleton';
 
 const { width, height } = Dimensions.get('window');
 
@@ -178,7 +180,6 @@ interface NotificationOverlayProps {
   isVisible: boolean;
   onClose: () => void;
 }
-
 const NotificationOverlay: React.FC<NotificationOverlayProps> = ({
   isVisible,
   onClose,
@@ -188,6 +189,35 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
   const neskaColor = '#00B4D8';
+  const [isLoading, setIsLoading] = useState(true);
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const contentFadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (isVisible) {
+      setIsLoading(true);
+      setTimeout(() => {
+        Animated.parallel([
+          Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 200,  // Reduced from 400
+            useNativeDriver: true,
+          }),
+          Animated.timing(contentFadeAnim, {
+            toValue: 1,
+            duration: 200,  // Reduced from 300
+            useNativeDriver: true,
+          })
+        ]).start(() => {
+          setIsLoading(false);
+        });
+      }, 800); // Reduced from 1500
+    } else {
+      setIsLoading(true);
+      fadeAnim.setValue(1);
+      contentFadeAnim.setValue(0);
+    }
+  }, [isVisible]);
 
   const tabs = [
     {
@@ -460,25 +490,36 @@ const NotificationOverlay: React.FC<NotificationOverlayProps> = ({
         </ScrollView>
       </View>
 
-      {/* Notifications List */}
-      <ScrollView
-        style={styles.notificationsList}
-        showsVerticalScrollIndicator={false}
-      >
-        {getFilteredNotifications().map(renderNotificationItem)}
+      {/* Loading skeleton / content */}
+      {isLoading ? (
+        <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+          <NotificationsSkeleton />
+        </Animated.View>
+      ) : (
+        <Animated.View style={{ flex: 1, opacity: contentFadeAnim }}>
+          {/* Notifications List */}
+          <ScrollView
+            style={styles.notificationsList}
+            showsVerticalScrollIndicator={false}
+          >
+            {getFilteredNotifications().map(renderNotificationItem)}
 
-        {getFilteredNotifications().length === 0 && (
-          <View style={styles.emptyState}>
-            <Bell size={48} color={colors.secondary} />
-            <Text style={[styles.emptyText, { color: colors.secondary }]}>
-              No {activeTab.toLowerCase()} notifications
-            </Text>
-            <Text style={[styles.emptySubtext, { color: colors.secondary }]}>
-              When you get notifications, they'll show up here
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+            {getFilteredNotifications().length === 0 && (
+              <View style={styles.emptyState}>
+                <Bell size={48} color={colors.secondary} />
+                <Text style={[styles.emptyText, { color: colors.secondary }]}>
+                  No {activeTab.toLowerCase()} notifications
+                </Text>
+                <Text
+                  style={[styles.emptySubtext, { color: colors.secondary }]}
+                >
+                  When you get notifications, they'll show up here
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        </Animated.View>
+      )}
     </View>
   ) : null;
 };

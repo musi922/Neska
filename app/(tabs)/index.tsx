@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Animated } from 'react-native';
 import { useColorScheme } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Analytics, ANALYTICS_EVENTS } from '@/utils/analytics';
@@ -9,10 +9,10 @@ import HeaderBar from '@/components/HeaderBar';
 import ContentCard from '@/components/ContentCard';
 import LivestreamPreview from '@/components/LivestreamPreview';
 import CategoryChip from '@/components/CategoryChip';
-import ProfileSummary from '@/components/ProfileSummary';
 import OfflineNotice from '@/components/OfflineNotice';
 import { router } from 'expo-router';
 import StoriesSection from '@/components/StoriesSection';
+import HomeScreenSkeleton from '@/components/skeletons/HomeScreenSkeleton'; // Import the skeleton
 
 // Mock data
 const categories = ['For You', 'Stories', 'Watch', 'Live', 'Following'];
@@ -22,8 +22,7 @@ const liveStreams = [
     id: '1',
     image: 'https://images.pexels.com/photos/2263936/pexels-photo-2263936.jpeg',
     username: 'musiclover243',
-    avatar:
-      'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
+    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg',
     viewers: 1542,
     category: 'Music',
   },
@@ -31,8 +30,7 @@ const liveStreams = [
     id: '2',
     image: 'https://images.pexels.com/photos/9072388/pexels-photo-9072388.jpeg',
     username: 'gamerpro99',
-    avatar:
-      'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg',
+    avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg',
     viewers: 872,
     category: 'Gaming',
   },
@@ -49,8 +47,7 @@ const liveStreams = [
     id: '4',
     image: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
     username: 'amani_j',
-    avatar:
-      'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+    avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
     viewers: 321,
     category: 'Music',
   },
@@ -58,8 +55,7 @@ const liveStreams = [
     id: '5',
     image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
     username: 'dance_queen',
-    avatar:
-      'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
     viewers: 210,
     category: 'Dance',
   },
@@ -67,8 +63,7 @@ const liveStreams = [
     id: '6',
     image: 'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
     username: 'comedian_k',
-    avatar:
-      'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
+    avatar: 'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
     viewers: 145,
     category: 'Comedy',
   },
@@ -78,40 +73,35 @@ const creators = [
   {
     id: '1',
     username: 'amani_j',
-    avatar:
-      'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
+    avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg',
     isLive: true,
     following: true,
   },
   {
     id: '2',
     username: 'tech_eric',
-    avatar:
-      'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
+    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     isLive: false,
     following: false,
   },
   {
     id: '3',
     username: 'dance_queen',
-    avatar:
-      'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
+    avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg',
     isLive: true,
     following: true,
   },
   {
     id: '4',
     username: 'artist_paul',
-    avatar:
-      'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg',
+    avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg',
     isLive: false,
     following: false,
   },
   {
     id: '5',
     username: 'comedian_k',
-    avatar:
-      'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
+    avatar: 'https://images.pexels.com/photos/2218786/pexels-photo-2218786.jpeg',
     isLive: true,
     following: true,
   },
@@ -147,8 +137,7 @@ const feedContent = [
     image: 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg',
     title: 'Join my live class tomorrow on digital marketing strategies',
     username: 'business_coach',
-    avatar:
-      'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
+    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     likes: 843,
     comments: 76,
     verified: false,
@@ -226,11 +215,48 @@ const watchVideos = [
   },
 ];
 
+// Simulate data fetching
+async function fetchData(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 2500)); // 2.5 seconds loading time
+}
+
 export default function HomeScreen() {
   const [activeCategory, setActiveCategory] = useState('For You');
+  const [isLoading, setIsLoading] = useState(true);
+  const fadeAnim = React.useRef(new Animated.Value(1)).current;
+  const contentFadeAnim = React.useRef(new Animated.Value(0)).current;
+  
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const insets = useSafeAreaInsets();
+
+  useEffect(() => {
+    // Fetch data on mount
+    fetchData().then(() => {
+      // Fade out skeleton
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }).start(() => {
+        setIsLoading(false);
+        // Fade in content
+        Animated.timing(contentFadeAnim, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      });
+
+// Key changes made:
+// 1. Added HomeScreenSkeleton import at the top
+// 2. Added isLoading state and fadeAnim refs for smooth transitions
+// 3. fetchData() simulates 2.5 second loading (you can adjust this)
+// 4. Skeleton shows first, then fades out
+// 5. Real content fades in smoothly after skeleton disappears
+// 6. Images load in the background while skeleton is visible
+    });
+  }, []);
 
   // Track screen view
   React.useEffect(() => {
@@ -241,7 +267,6 @@ export default function HomeScreen() {
   const followingFeed = feedContent.filter((item) => item.following);
   const followingCreators = creators.filter((c) => c.following);
   const followingLiveStreams = liveStreams.filter((stream) => {
-    // Simulate: show live streams from followed creators only
     return followingCreators.some((c) => c.username === stream.username);
   });
 
@@ -250,8 +275,18 @@ export default function HomeScreen() {
     Analytics.track(ANALYTICS_EVENTS.USER_ACTION, { action: 'category_changed', category });
   };
 
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+        <HomeScreenSkeleton />
+      </Animated.View>
+    );
+  }
+
+  // Show actual content after loading
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <Animated.View style={[styles.container, { backgroundColor: colors.background, opacity: contentFadeAnim }]}>
       <OfflineNotice />
       <HeaderBar />
       <ScrollView
@@ -462,9 +497,8 @@ export default function HomeScreen() {
             </View>
           </View>
         )}
-    
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -491,9 +525,6 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
   },
-  creatorsScroll: {
-    paddingHorizontal: Spacing.md,
-  },
   liveScroll: {
     paddingHorizontal: Spacing.md,
   },
@@ -503,37 +534,6 @@ const styles = StyleSheet.create({
   liveColumn: {
     gap: 16,
     paddingHorizontal: Spacing.md,
-  },
-  creatorItem: {
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  creatorAvatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginBottom: 4,
-  },
-  creatorAvatarLive: {
-    borderWidth: 2,
-    borderColor: '#FF0000',
-  },
-  creatorUsername: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  liveBadge: {
-    position: 'absolute',
-    bottom: 12,
-    backgroundColor: '#FF0000',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  liveText: {
-    color: '#FFFFFF',
-    fontSize: 8,
-    fontWeight: 'bold',
   },
   watchContainer: {
     paddingHorizontal: Spacing.md,
@@ -598,5 +598,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     opacity: 0.6,
     fontFamily: FontFamily.regular,
-  }
+  },
 });
